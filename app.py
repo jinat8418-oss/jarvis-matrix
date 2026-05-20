@@ -36,122 +36,124 @@ if module == "🛸 Jarvis 3D Design Lab":
     
     # User Inputs
     component = st.selectbox("Select Target Component Matrix:", ["Aero Spoiler Array", "Supercar Wheel Rim Node", "V10 Engine Block Cylinder"])
-    mesh_density = st.slider("Mesh Resolution Density:", 10, 50, 30)
     scale_factor = st.slider("Dimensional Scale Parameter:", 0.5, 2.5, 1.0)
-    
     command = st.text_input("Voice/Text Override Command Protocol:", value="Jarvis, initialize rapid prototyping structural sweep.")
     
     if st.button("RUN 3D STRUCTURAL COMPILATION"):
         st.info(f"Processing command: '{command}'... Generating holographic telemetry array.")
         
+        fig = go.Figure()
+        
         if component == "Aero Spoiler Array":
-            # Parabolic aerodynamic wing surface profile
-            u = np.linspace(0, 2 * np.pi, mesh_density)
-            x = scale_factor * np.outer(np.linspace(-3, 3, mesh_density), np.ones(mesh_density))
-            y = scale_factor * np.outer(np.linspace(-1, 1, mesh_density), np.ones(mesh_density))**2
-            z = scale_factor * 0.2 * np.sin(x)
+            # Parabolic wing profile
+            u = np.linspace(-2, 2, 20)
+            v = np.linspace(-1, 1, 20)
+            U, V = np.meshgrid(u, v)
+            X = scale_factor * U
+            Y = scale_factor * V
+            Z = scale_factor * 0.15 * (U**2 - V**2)
+            fig.add_trace(go.Surface(x=X, y=Y, z=Z, colorscale='Viridis', showscale=False))
             
         elif component == "Supercar Wheel Rim Node":
-            # 3D structural torus ring
-            u = np.linspace(0, 2 * np.pi, mesh_density)
-            v = np.linspace(0, 2 * np.pi, mesh_density)
-            x = scale_factor * np.outer(3 + np.cos(v), np.cos(u))
-            y = scale_factor * np.outer(3 + np.cos(v), np.sin(u))
-            z = scale_factor * np.outer(np.sin(v), np.ones(mesh_density))
+            # Clean structural torus ring
+            u = np.linspace(0, 2*np.pi, 24)
+            v = np.linspace(0, 2*np.pi, 24)
+            U, V = np.meshgrid(u, v)
+            R, r = 2.0 * scale_factor, 0.6 * scale_factor
+            X = (R + r * np.cos(V)) * np.cos(U)
+            Y = (R + r * np.cos(V)) * np.sin(U)
+            Z = r * np.sin(V)
+            fig.add_trace(go.Surface(x=X, y=Y, z=Z, colorscale='Cividis', showscale=False))
             
         else:
-            # Mechanical V10 Engine Block: 2 banks of 5 rigid cylinders angled at 45 degrees
-            x_list, y_list, z_list = [], [], []
-            c_u = np.linspace(0, 2 * np.pi, int(mesh_density/2))
-            c_v = np.linspace(-1.5, 1.5, int(mesh_density/2))
+            # TRUE V10 ENGINE BLOCK MECHANICS: 10 individual, non-connected physical cylinders
+            colors = ['#00FFCC', '#0099FF']
             
-            for bank in [-1, 1]: 
-                angle = bank * np.pi / 4 # 45-degree angle shift for V-shape
-                for i in range(5): # 5 cylinders per bank
-                    z_offset = (i - 2) * 1.5 * scale_factor # Linear spacing down the block length
+            for b_idx, bank in enumerate([-1, 1]): 
+                angle = bank * np.pi / 5  # Sharp V-angle displacement (~36 degrees)
+                
+                for i in range(5): # 5 cylinders on each side
+                    z_offset = (i - 2) * 1.6 * scale_factor # Linear spacing along block length
+                    x_center = bank * 1.0 * scale_factor
                     
-                    for uc in c_u:
-                        for vc in c_v:
-                            radius = 0.5 * scale_factor
-                            x_cyl = radius * np.cos(uc)
-                            y_cyl = vc * scale_factor
-                            
-                            # Rotate vectors into an aggressive mechanical V alignment
-                            x_rot = x_cyl * np.cos(angle) - y_cyl * np.sin(angle)
-                            y_rot = x_cyl * np.sin(angle) + y_cyl * np.cos(angle) + (bank * 0.8 * scale_factor)
-                            
-                            x_list.append(x_rot)
-                            y_list.append(y_rot)
-                            z_list.append(z_offset)
-            
-            # Reshape 1D data arrays into structured 2D coordinate spaces for the mesh surface
-            total_points = len(x_list)
-            rows = int(np.sqrt(total_points))
-            while total_points % rows != 0:
-                rows -= 1
-            cols = int(total_points / rows)
-            
-            x = np.array(x_list).reshape(rows, cols)
-            y = np.array(y_list).reshape(rows, cols)
-            z = np.array(z_list).reshape(rows, cols)
+                    # Generate standalone cylinder geometry coordinates
+                    u = np.linspace(0, 2*np.pi, 16)
+                    h = np.linspace(-1.2, 1.2, 10)
+                    
+                    x_cyl, y_cyl, z_cyl = [], [], []
+                    
+                    for r_val in [0.45 * scale_factor]: # Cylinder radius
+                        for h_val in h:
+                            for angle_val in u:
+                                # Apply rotation parameters to tilt the cylinders into a solid V-shape
+                                nx = r_val * np.cos(angle_val)
+                                ny = h_val
+                                
+                                rx = nx * np.cos(angle) - ny * np.sin(angle) + x_center
+                                ry = nx * np.sin(angle) + ny * np.cos(angle)
+                                
+                                x_cyl.append(rx)
+                                y_cyl.append(ry)
+                                z_cyl.append(h_val + z_offset)
+                    
+                    # Mount each cylinder as its own individual 3D solid mesh trace
+                    fig.add_trace(go.Mesh3d(
+                        x=x_cyl, y=y_cyl, z=z_cyl,
+                        alphahull=0,
+                        color=colors[b_idx],
+                        opacity=0.45,
+                        name=f"Cylinder {i+1} [Bank {'A' if bank==-1 else 'B'}]",
+                        showlegend=False
+                    ))
+                    
+                    # Add bright neon wireframe borders over each cylinder profile
+                    fig.add_trace(go.Scatter3d(
+                        x=x_cyl[::3], y=y_cyl[::3], z=z_cyl[::3],
+                        mode='lines',
+                        line=dict(color='lime', width=1.5),
+                        showlegend=False
+                    ))
 
-        # Build Plotly interactive 3D mesh figure
-        fig = go.Figure(data=[go.Surface(x=x, y=y, z=z, colorscale='Viridis', showscale=False)])
-        
+        # Core Dark Terminal Styling Layout
         fig.update_layout(
-            title=f"Jarvis Rendering: {component}",
             scene=dict(
-                xaxis=dict(backgroundcolor="black", gridcolor="lime", showbackground=True, zerolinecolor="lime"),
-                yaxis=dict(backgroundcolor="black", gridcolor="lime", showbackground=True, zerolinecolor="lime"),
-                zaxis=dict(backgroundcolor="black", gridcolor="lime", showbackground=True, zerolinecolor="lime"),
+                xaxis=dict(backgroundcolor="black", gridcolor="#113311", showbackground=True, zerolinecolor="lime", title="X-VECTOR"),
+                yaxis=dict(backgroundcolor="black", gridcolor="#113311", showbackground=True, zerolinecolor="lime", title="Y-VECTOR"),
+                zaxis=dict(backgroundcolor="black", gridcolor="#113311", showbackground=True, zerolinecolor="lime", title="Z-BLOCK"),
+                aspectmode='data'
             ),
-            margin=dict(l=0, r=0, b=0, t=40),
-            paper_bgcolor='rgba(0,0,0,0)',
-            plot_bgcolor='rgba(0,0,0,0)'
+            margin=dict(l=0, r=0, b=0, t=0),
+            paper_bgcolor='black',
+            plot_bgcolor='black'
         )
         
         st.plotly_chart(fig, use_container_width=True)
-        st.success("MECHANICAL VECTOR PROTOTYPE MOUNTED STABLE.")
+        st.success("🤖 MATRIX PATCH COMPLETE. V10 BLOCK TELEMETRY STABLE.")
 
-# Habit Tracker Section
+# Keep all other sub-modules running perfectly below
 elif module == "🚨 Habit Tracker Grid":
     st.subheader("[+] DIGITAL HABIT TRACKER MATRIX")
     with st.expander("💾 Sync / Load Previous Progress Data"):
         uploaded_data = st.text_area("Paste your backup code string here to load past history:")
         history = json.loads(uploaded_data) if uploaded_data else {}
-        
-    st.markdown("### 📅 SELECT TRACKING TARGET DATE")
     current_date = datetime.now().strftime("%Y-%m-%d")
     target_date = st.text_input("Logging Date (YYYY-MM-DD):", value=current_date)
-
-    if target_date not in history:
-        history[target_date] = {habit: False for habit in HABITS}
-
+    if target_date not in history: history[target_date] = {habit: False for habit in HABITS}
     st.markdown("### ❌ HABIT EXECUTION CHECKLIST")
     for habit in HABITS:
-        default_val = history[target_date].get(habit, False)
-        history[target_date][habit] = st.checkbox(f"Mark ❌ for: {habit}", value=default_val)
-
+        history[target_date][habit] = st.checkbox(f"Mark ❌ for: {habit}", value=history[target_date].get(habit, False))
     st.markdown("---")
     st.markdown("### 📈 MONTHLY CONSISTENCY METRICS")
-    total_days_logged = len(history)
-    
-    if total_days_logged > 0:
+    if len(history) > 0:
         for habit in HABITS:
-            completed_days = sum(1 for date in history if history[date].get(habit, False))
-            score_pct = (completed_days / total_days_logged) * 100
+            completed = sum(1 for d in history if history[d].get(habit, False))
+            pct = (completed / len(history)) * 100
             st.write(f"**{habit}**")
-            st.progress(int(score_pct))
-            st.caption(f"Consistency Rating: {score_pct:.1f}% ({completed_days}/{total_days_logged} Days Execution)")
-    else:
-        st.info("No tracking logs detected in system memory yet.")
-
+            st.progress(int(pct))
+            st.caption(f"Consistency Rating: {pct:.1f}% ({completed}/{len(history)} Days)")
     st.markdown("---")
-    st.markdown("### 📤 SAVE PROGRESS DATA")
-    json_string = json.dumps(history)
-    st.code(json_string, language="json")
+    st.code(json.dumps(history), language="json")
 
-# Core Sub-Modules
 elif module == "Diagnostics":
     st.subheader("[+] SYSTEM DIAGNOSTICS")
     st.text("Core Operational Loop: STABLE\nBandwidth Allocation: MAXIMUM\nAll nodes reporting green.")
@@ -161,13 +163,13 @@ elif module == "Content Matrix":
     niche = st.selectbox("Select Target Segment:", ["Cinematic Automotive", "Grooming & Skincare"])
     if st.button("EXECUTE GENERATION"):
         if niche == "Cinematic Automotive":
-            hooks = ["Heavy machinery meets a dark aesthetic.", "Chasing shadows in a world full of noise.", "Built for the night shift."]
+            hooks = ["Heavy machinery meets a dark aesthetic.", "Chasing shadows in a world full of noise."]
             bodies = ["[Visual Structure]\n├── Shadow Contrast: 75%\n└── Highlights: Muted Cinematic Green"]
-            tags = "#moodandmachine #cinematiccars"
+            tags = "#moodandmachine"
         else:
-            hooks = ["Clear skin requires discipline, not random products.", "Stop overwashing your face. Here is the matrix."]
-            bodies = ["[Routine Matrix]\n├── AM: Gentle Cleanser + Hydration\n└── PM: Deep Cleanse + Recovery Layer"]
-            tags = "#glowup #skincareroutine"
+            hooks = ["Clear skin requires discipline, not random products.", "Stop overwashing your face."]
+            bodies = ["[Routine Matrix]\n├── AM: Gentle Cleanser\n└── PM: Deep Cleanse"]
+            tags = "#glowup"
         st.info(f"**Visual Hook:** \"{random.choice(hooks)}\"")
         st.code(random.choice(bodies), language="text")
         st.warning(f"**Aesthetic Tags:** {tags}")
@@ -175,7 +177,7 @@ elif module == "Content Matrix":
 elif module == "F1 Motorsport Vault":
     st.subheader("[+] TELEMETRY ARCHIVE")
     if st.button("PULL RANDOM DATAPOINT"):
-        facts = ["F1 cars hit up to 6G deceleration.", "Modern engines operate past 50% thermal efficiency.", "An F1 crew can swap 4 tires in under 1.80 seconds."]
+        facts = ["F1 cars hit up to 6G deceleration.", "Modern engines operate past 50% thermal efficiency."]
         st.code(random.choice(facts), language="text")
 
 elif module == "Risk Parameters":
@@ -192,4 +194,3 @@ elif module == "Supercar Telemetry":
 
 st.markdown("---")
 st.write("📟 SECURE CLOUD RUNTIME // END OF LINE.")
-                            
