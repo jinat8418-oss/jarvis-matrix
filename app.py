@@ -1,22 +1,13 @@
 import streamlit as st
 import random
 
-# Page setup for retro terminal styling
 st.set_page_config(page_title="Jarvis Terminal OS", page_icon="📟", layout="centered")
 
-# Hardcore Neon Hacker UI Custom Overrides
 st.markdown("""
     <style>
-    /* Dark Terminal Background */
     .main { background-color: #050508; color: #33ff33; font-family: 'Courier New', Courier, monospace; }
-    
-    /* Neon Cyan Terminal Titles */
     h1, h2, h3, label { font-family: 'Courier New', Courier, monospace !important; color: #00ffcc !important; letter-spacing: 2px; }
-    
-    /* Global Monospace Text */
     div, p, span { font-family: 'Courier New', Courier, monospace !important; color: #e0e0e0; }
-    
-    /* Custom Dashed Cyber Buttons */
     .stButton>button { 
         background-color: #0a0f1d; 
         color: #00ffcc; 
@@ -32,8 +23,6 @@ st.markdown("""
         border: 1px solid #00ffcc;
         box-shadow: 0px 0px 10px #00ffcc;
     }
-    
-    /* Code block container borders */
     .stCodeBlock, stAlert { background-color: #0a0a0f !important; border: 1px solid #33ff33 !important; }
     </style>
     """, unsafe_style_allowed=True)
@@ -42,7 +31,6 @@ st.title("📟 JARVIS_OS : CORE_WEB_INTERFACE")
 st.write("SYSTEM STATUS: ONLINE // SECURITY PROTOCOLS: ACTIVE // ENGINE: CLOUD_MATRIX")
 st.markdown("=========================================================================")
 
-# Shared Content Datapools
 captions_pool = {
     "Cinematic Automotive": {
         "title": "Aesthetic Velocity Strategy",
@@ -64,7 +52,6 @@ f1_facts = [
     {"topic": "Downforce Aero Dynamics", "fact": "At speeds scaling past 150 km/h, negative lift dynamics exceed the net structural curb mass of the vehicle, meaning it could aerodynamically track upside down."}
 ]
 
-# Sidebar Selection Matrix
 st.sidebar.markdown("### 🕹️ SYSTEM_MENU")
 module = st.sidebar.radio("SELECT MODE VECTOR", [
     "> STATUS_CHECK", 
@@ -106,8 +93,5 @@ elif module == "> RISK_CALCULATOR":
     
     allowed_loss = balance * (risk_pct / 100.0)
     st.markdown(f"### MAXIMUM LOSS ALLOWED: `${allowed_loss:,.2f}`")
-    
-  http://googleusercontent.com/immersive_entry_chip/0
-
----
-
+    st.markdown("
+http://googleusercontent.com/immersive_entry_chip/0
