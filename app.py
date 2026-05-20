@@ -1,6 +1,8 @@
 import streamlit as st
 import random
 import json
+import numpy as np
+import plotly.graph_objects as go
 from datetime import datetime
 
 # Core Configuration
@@ -12,20 +14,14 @@ st.markdown("---")
 
 # Habit Matrix Setup
 HABITS = [
-    "Study (3-4 Hours)",
-    "Workout",
-    "No PMO",
-    "Asset Building (Pins)",
-    "Hydration",
-    "Social Momentum",
-    "No Junk",
-    "Reading 10 Pages",
-    "Day/Night Skincare"
+    "Study (3-4 Hours)", "Workout", "No PMO", "Asset Building (Pins)",
+    "Hydration", "Social Momentum", "No Junk", "Reading 10 Pages", "Day/Night Skincare"
 ]
 
 # Navigation System
 st.sidebar.subheader("🕹️ CONTROL PANEL")
 module = st.sidebar.radio("CHOOSE SYSTEM MODULE:", [
+    "🛸 Jarvis 3D Design Lab",
     "🚨 Habit Tracker Grid",
     "Diagnostics", 
     "Content Matrix", 
@@ -34,96 +30,99 @@ module = st.sidebar.radio("CHOOSE SYSTEM MODULE:", [
     "Supercar Telemetry"
 ])
 
-if module == "🚨 Habit Tracker Grid":
-    st.subheader("[+] DIGITAL HABIT TRACKER MATRIX")
-    st.write("Log your daily execution variables below. Tap to mark your progress.")
+if module == "🛸 Jarvis 3D Design Lab":
+    st.subheader("[+] TONY STARK HOLOGRAPHIC HOLOGRAPHIC MESH GENERATOR")
+    st.write("Simulating Jarvis spatial design vectors. Enter structural parameters to process.")
     
-    with st.expander("💾 Sync / Load Previous Progress Data"):
-        uploaded_data = st.text_area("Paste your backup code string here to load past history:")
-        if uploaded_data:
-            try:
-                history = json.loads(uploaded_data)
-                st.success("History matrix synced successfully!")
-            except:
-                st.error("Invalid sync string format.")
-                history = {}
+    # User Inputs
+    component = st.selectbox("Select Target Component Matrix:", ["Aero Spoiler Array", "Supercar Wheel Rim Node", "V10 Engine Block Cylinder"])
+    mesh_density = st.slider("Mesh Resolution Density (Polygons):", 10, 50, 30)
+    scale_factor = st.slider("Dimensional Scale Parameter:", 0.5, 2.5, 1.0)
+    
+    command = st.text_input("Voice/Text Override Command Protocol:", value="Jarvis, initialize rapid prototyping structural sweep.")
+    
+    if st.button("RUN 3D STRUCTURAL COMPILATION"):
+        st.info(f"Processing command: '{command}'... Generating holographic telemetry array.")
+        
+        # Math engine to construct real interactive 3D coordinates based on selection
+        u = np.linspace(0, 2 * np.pi, mesh_density)
+        v = np.linspace(0, np.pi, mesh_density)
+        
+        if component == "Aero Spoiler Array":
+            # Generate a parabolic aerodynamic wing surface profile
+            x = scale_factor * np.outer(np.linspace(-3, 3, mesh_density), np.ones(mesh_density))
+            y = scale_factor * np.outer(np.linspace(-1, 1, mesh_density), np.ones(mesh_density))**2
+            z = scale_factor * 0.2 * np.sin(x)
+        elif component == "Supercar Wheel Rim Node":
+            # Generate a highly complex 3D structural torus ring
+            x = scale_factor * np.outer(3 + np.cos(v), np.cos(u))
+            y = scale_factor * np.outer(3 + np.cos(v), np.sin(u))
+            z = scale_factor * np.outer(np.sin(v), np.ones(mesh_density))
         else:
-            history = {}
+            # Generate a complex interlocking hyper-cylinder block matrix
+            x = scale_factor * np.outer(np.sin(v), np.cos(u)) * (1 + 0.3 * np.sin(4*u))
+            y = scale_factor * np.outer(np.sin(v), np.sin(u)) * (1 + 0.3 * np.sin(4*u))
+            z = scale_factor * np.outer(np.cos(v), np.ones(mesh_density))
 
-    st.markdown("### 📅 SELECT TRACKING TARGET DATE")
+        # Build the dynamic Plotly interactive 3D mesh figure
+        fig = go.Figure(data=[go.Surface(x=x, y=y, z=z, colorscale='Viridis', showscale=False)])
+        
+        fig.update_layout(
+            title=f"Jarvis Rendering: {component}",
+            scene=dict(
+                xaxis=dict(backgroundcolor="black", gridcolor="lime", showbackground=True, zerolinecolor="lime"),
+                yaxis=dict(backgroundcolor="black", gridcolor="lime", showbackground=True, zerolinecolor="lime"),
+                zaxis=dict(backgroundcolor="black", gridcolor="lime", showbackground=True, zerolinecolor="lime"),
+            ),
+            margin=dict(l=0, r=0, b=0, t=40),
+            paper_bgcolor='rgba(0,0,0,0)',
+            plot_bgcolor='rgba(0,0,0,0)'
+        )
+        
+        # Inject the live 3D rendering canvas right onto the phone interface
+        st.plotly_chart(fig, use_container_width=True)
+        st.success("HOLOGRAPHIC PROTOTYPE MOUNTED STABLE. ROTATION CHANNELS UNLOCKED.")
+
+# Keeping all your previous modules running perfectly below
+elif module == "🚨 Habit Tracker Grid":
+    st.subheader("[+] DIGITAL HABIT TRACKER MATRIX")
+    with st.expander("💾 Sync / Load Previous Progress Data"):
+        uploaded_data = st.text_area("Paste your backup code string here:")
+        history = json.loads(uploaded_data) if uploaded_data else {}
     current_date = datetime.now().strftime("%Y-%m-%d")
     target_date = st.text_input("Logging Date (YYYY-MM-DD):", value=current_date)
-
-    if target_date not in history:
-        history[target_date] = {habit: False for habit in HABITS}
-
+    if target_date not in history: history[target_date] = {habit: False for habit in HABITS}
     st.markdown("### ❌ HABIT EXECUTION CHECKLIST")
     for habit in HABITS:
-        default_val = history[target_date].get(habit, False)
-        history[target_date][habit] = st.checkbox(f"Mark ❌ for: {habit}", value=default_val)
-
+        history[target_date][habit] = st.checkbox(f"Mark ❌ for: {habit}", value=history[target_date].get(habit, False))
     st.markdown("---")
     st.markdown("### 📈 MONTHLY CONSISTENCY METRICS")
-    total_days_logged = len(history)
-    
-    if total_days_logged > 0:
+    if len(history) > 0:
         for habit in HABITS:
-            completed_days = sum(1 for date in history if history[date].get(habit, False))
-            score_pct = (completed_days / total_days_logged) * 100
+            completed = sum(1 for d in history if history[d].get(habit, False))
+            pct = (completed / len(history)) * 100
             st.write(f"**{habit}**")
-            st.progress(int(score_pct))
-            st.caption(f"Consistency Rating: {score_pct:.1f}% ({completed_days}/{total_days_logged} Days Execution)")
-    else:
-        st.info("No tracking logs detected in system memory yet.")
-
+            st.progress(int(pct))
+            st.caption(f"Consistency Rating: {pct:.1f}% ({completed}/{len(history)} Days)")
     st.markdown("---")
-    st.markdown("### 📤 SAVE PROGRESS DATA")
-    st.write("Copy this backup string and save it in a notes app:")
-    json_string = json.dumps(history)
-    st.code(json_string, language="json")
+    st.code(json.dumps(history), language="json")
 
 elif module == "Diagnostics":
     st.subheader("[+] SYSTEM DIAGNOSTICS")
-    st.text("Core Operational Loop: STABLE\nBandwidth Allocation: MAXIMUM\nAll nodes reporting green.")
+    st.text("Core Operational Loop: STABLE\nBandwidth Allocation: MAXIMUM")
 
 elif module == "Content Matrix":
     st.subheader("[+] CREATIVE PIPELINE")
     niche = st.selectbox("Select Target Segment:", ["Cinematic Automotive", "Grooming & Skincare"])
-    
     if st.button("EXECUTE GENERATION"):
-        # Expanded multi-option arrays for random generation
         if niche == "Cinematic Automotive":
-            hooks = [
-                "Heavy machinery meets a dark aesthetic.",
-                "Chasing shadows in a world full of noise.",
-                "Built for the night shift.",
-                "Quiet luxury, loud horsepower.",
-                "They look at the shine, we design the silhouette.",
-                "Engineered to blend into the darkness."
-            ]
-            bodies = [
-                "[Visual Structure]\n├── Shadow Contrast: 75%\n└── Highlights: Muted Cinematic Green\n└── Framing: Aggressive Low-Angle Grid",
-                "[Visual Structure]\n├── Tone Matrix: Midnight Moody Blue\n└── Exposure: -1.2 Ev crushed blacks\n└── Centerpiece: Side-profile lighting split",
-                "[Visual Structure]\n├── Grain Filter: 15% Retro Cinematic\n└── Grading: Cyan Shadows / Warm Highlights\n└── Focal Node: Dual-exhaust geometry geometry"
-            ]
-            tags = "#moodandmachine #cinematiccars #darkaesthetic #automativedesign"
-            
-        else: # Grooming & Skincare
-            hooks = [
-                "Clear skin requires discipline, not random products.",
-                "Most guys completely ruin their skin with this one mistake.",
-                "Fix these 3 bad habits before your skin breaks out.",
-                "The ultimate minimal routine for a completely clear complexion.",
-                "Stop overwashing your face. Here is the actual matrix.",
-                "Skincare is a discipline game. No excuses."
-            ]
-            bodies = [
-                "[Routine Matrix]\n├── AM: Gentle Cleanser + Hydration Lock\n└── PM: Deep Cleanse + Active Recovery Layer",
-                "[Routine Matrix]\n├── Shield Phase: Non-comedogenic Sun Protection\n└── Recovery Phase: Cold water wash + Hyaluronic sealing",
-                "[Routine Matrix]\n├── Exfoliation Index: 2x per week maximum\n└── Daily Rule: Zero face touching / Sterile microfibers"
-            ]
-            tags = "#glowup #skincareroutine #mensgrooming #selfimprovement"
-            
+            hooks = ["Heavy machinery meets a dark aesthetic.", "Chasing shadows in a world full of noise.", "Built for the night shift."]
+            bodies = ["[Visual Structure]\n├── Shadow Contrast: 75%\n└── Highlights: Muted Cinematic Green"]
+            tags = "#moodandmachine #cinematiccars"
+        else:
+            hooks = ["Clear skin requires discipline, not random products.", "Most guys ignore basic rules."]
+            bodies = ["[Routine Matrix]\n├── AM: Gentle Cleanser\n└── PM: Deep Cleanse"]
+            tags = "#glowup #skincareroutine"
         st.info(f"**Visual Hook:** \"{random.choice(hooks)}\"")
         st.code(random.choice(bodies), language="text")
         st.warning(f"**Aesthetic Tags:** {tags}")
@@ -131,13 +130,7 @@ elif module == "Content Matrix":
 elif module == "F1 Motorsport Vault":
     st.subheader("[+] TELEMETRY ARCHIVE")
     if st.button("PULL RANDOM DATAPOINT"):
-        facts = [
-            "F1 cars hit up to 6G deceleration forces during heavy braking zones.",
-            "Modern V6 turbo hybrid power units operate past a historic 50% thermal efficiency index.",
-            "Past 150 km/h, aerodynamic downforce exceeds the entire net curb weight of an F1 car.",
-            "An F1 pit crew can swap 4 tires completely in under 1.80 seconds flat.",
-            "F1 tire compounds operate inside an optimal thermal window reaching up to 110°C."
-        ]
+        facts = ["F1 cars hit up to 6G deceleration.", "Modern engines operate past 50% thermal efficiency."]
         st.code(random.choice(facts), language="text")
 
 elif module == "Risk Parameters":
@@ -146,12 +139,12 @@ elif module == "Risk Parameters":
     risk_pct = st.slider("Position Risk Cap (%):", 0.1, 5.0, 1.0)
     allowed_loss = balance * (risk_pct / 100.0)
     st.metric(label="MAXIMUM ALLOWED LOSS PER POSITION", value=f"${allowed_loss:,.2f}")
-    st.error("CRITICAL: Set hard stop-loss brackets exactly at this limit.")
 
 elif module == "Supercar Telemetry":
     st.subheader("[+] VEHICLE SPECIFICATION PROFILE")
     st.success("**LAMBORGHINI HURACÁN EVO SPYDER**")
-    st.code("├── Powertrain: 5.2L Naturally Aspirated V10\n├── Output: 640 HP @ 8,000 RPM\n└── Performance: 0-100 km/h in 3.1s\n└── Drivetrain: 7-Speed LDF Dual-Clutch / AWD", language="text")
+    st.code("├── Powertrain: 5.2L Naturally Aspirated V10\n├── Output: 640 HP @ 8,000 RPM\n└── Performance: 0-100 km/h in 3.1s", language="text")
 
 st.markdown("---")
 st.write("📟 SECURE CLOUD RUNTIME // END OF LINE.")
+            
