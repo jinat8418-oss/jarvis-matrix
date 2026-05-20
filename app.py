@@ -106,7 +106,7 @@ elif module == "> RISK_CALCULATOR":
     
     allowed_loss = balance * (risk_pct / 100.0)
     st.markdown(f"### MAXIMUM LOSS ALLOWED: `${allowed_loss:,.2f}`")
-    st.markdown("
+    
   http://googleusercontent.com/immersive_entry_chip/0
 
 ---
