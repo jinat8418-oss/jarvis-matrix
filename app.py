@@ -1,97 +1,80 @@
 import streamlit as st
 import random
 
-st.set_page_config(page_title="Jarvis Terminal OS", page_icon="📟", layout="centered")
-
+# Page & Retro Terminal Styling
+st.set_page_config(page_title="Jarvis OS", page_icon="📟", layout="centered")
 st.markdown("""
     <style>
-    .main { background-color: #050508; color: #33ff33; font-family: 'Courier New', Courier, monospace; }
-    h1, h2, h3, label { font-family: 'Courier New', Courier, monospace !important; color: #00ffcc !important; letter-spacing: 2px; }
-    div, p, span { font-family: 'Courier New', Courier, monospace !important; color: #e0e0e0; }
+    .main { background-color: #050508; color: #33ff33; font-family: 'Courier New', monospace; }
+    h1, h2, h3, label { color: #00ffcc !important; font-family: 'Courier New', monospace !important; }
+    div, p, span { color: #e0e0e0; font-family: 'Courier New', monospace !important; }
     .stButton>button { 
-        background-color: #0a0f1d; 
-        color: #00ffcc; 
-        border: 1px dashed #00ffcc; 
-        border-radius: 0px; 
-        font-family: 'Courier New', Courier, monospace;
-        width: 100%;
-        transition: all 0.3s ease;
+        background-color: #0a0f1d; color: #00ffcc; border: 1px dashed #00ffcc; 
+        border-radius: 0px; font-family: 'Courier New', monospace; width: 100%;
     }
-    .stButton>button:hover { 
-        background-color: #00ffcc; 
-        color: #050508; 
-        border: 1px solid #00ffcc;
-        box-shadow: 0px 0px 10px #00ffcc;
-    }
+    .stButton>button:hover { background-color: #00ffcc; color: #050508; box-shadow: 0px 0px 10px #00ffcc; }
     .stCodeBlock, stAlert { background-color: #0a0a0f !important; border: 1px solid #33ff33 !important; }
     </style>
     """, unsafe_style_allowed=True)
 
-st.title("📟 JARVIS_OS : CORE_WEB_INTERFACE")
-st.write("SYSTEM STATUS: ONLINE // SECURITY PROTOCOLS: ACTIVE // ENGINE: CLOUD_MATRIX")
-st.markdown("=========================================================================")
+st.title("📟 JARVIS_OS : CORE")
+st.write("SYSTEM: ONLINE // ENGINE: CLOUD_MATRIX")
+st.markdown("=========================================================")
 
-captions_pool = {
+# Data Pools
+captions = {
     "Cinematic Automotive": {
-        "title": "Aesthetic Velocity Strategy",
-        "hooks": ["Heavy machinery meets dark aesthetic.", "Chasing shadows in a world full of noise.", "Built for the night shift."],
-        "bodies": ["[Layout: Split Contrast Grid]\n├── Left Panel : Deep shadows / Car silhouette\n└── Right Panel: Sharp typography / Mechanical specs"],
-        "tags": "#moodandmachine #cinematiccars #darkaesthetic"
+        "hook": "Heavy machinery meets dark aesthetic.",
+        "body": "[Layout: Split Grid]\n├── Left: Deep shadows\n└── Right: Sharp specs",
+        "tags": "#moodandmachine #cinematiccars"
     },
     "Grooming & Skincare": {
-        "title": "Glow-Up Core Matrix",
-        "hooks": ["Fix these habits for clear skin.", "Most guys ignore these basic rules.", "Instantly do this: No excuses."],
-        "bodies": ["[Layout: Clean vs Dirty Split Carousel]\n├── Clean: Wash face gently (2x max) | Non-comedogenic layers\n└── Dirty: Overwashing your skin | Using random harsh chemicals"],
-        "tags": "#glowup #mensgrooming #skincareroutine"
+        "hook": "Fix these habits for clear skin.",
+        "body": "[Layout: Split Carousel]\n├── Clean: Wash face (2x max)\n└── Dirty: Overwashing face",
+        "tags": "#glowup #skincareroutine"
     }
 }
 
 f1_facts = [
-    {"topic": "Braking G-Force Parameters", "fact": "Deceleration from 100 to 0 km/h occurs in under 15 meters. Drivers sustain brief deceleration loads crossing 5G to 6G benchmarks under heavy threshold braking zones."},
-    {"topic": "V6 Hybrid Thermal Efficiency", "fact": "Modern F1 1.6L V6 turbo hybrid power units cross a historic 50% thermal efficiency index, making them the most efficient combustion engines created."},
-    {"topic": "Downforce Aero Dynamics", "fact": "At speeds scaling past 150 km/h, negative lift dynamics exceed the net structural curb mass of the vehicle, meaning it could aerodynamically track upside down."}
+    "F1 cars decelerate from 100 to 0 km/h in under 15 meters (6G forces).",
+    "Modern V6 turbo hybrids break past 50% thermal efficiency.",
+    "At 150 km/h, F1 downforce exceeds the weight of the car itself."
 ]
 
-st.sidebar.markdown("### 🕹️ SYSTEM_MENU")
-module = st.sidebar.radio("SELECT MODE VECTOR", [
-    "> STATUS_CHECK", 
-    "> CONTENT_GENERATOR", 
-    "> F1_MOTORSPORT_VAULT", 
-    "> RISK_CALCULATOR", 
-    "> SUPERCAR_TELEMETRY"
-])
+# Sidebar Menu
+st.sidebar.markdown("### 🕹️ MENU")
+module = st.sidebar.radio("SELECT VECTOR", ["> STATUS", "> CONTENT", "> F1_VAULT", "> RISK_CALC", "> LAMBO_SPECS"])
 
-if module == "> STATUS_CHECK":
-    st.subheader("[+] SYSTEM DIAGNOSTICS")
-    st.text_area("Terminal Output", "Jarvis Core Operating Loop: NOMINAL\nCloud Instance Allocation: STABLE\nData Storage Arrays: MOUNTED\nReady for input parsing...", height=120)
+if module == "> STATUS":
+    st.subheader("[+] DIAGNOSTICS")
+    st.text_area("Output", "Jarvis Core Operating Loop: NOMINAL\nAll systems fully green.", height=100)
 
-elif module == "> CONTENT_GENERATOR":
-    st.subheader("[+] CREATIVE PIPELINE INJECTION")
-    niche = st.selectbox("Select Target Segment", ["Cinematic Automotive", "Grooming & Skincare"])
-    
-    if st.button("EXECUTE GENERATION PROTOCOL"):
-        data = captions_pool[niche]
-        hook = random.choice(data["hooks"])
-        body = random.choice(data["bodies"])
-        
-        st.markdown(f"**[VISUAL_HOOK_OVERLAY]**\n```text\n-> \" {hook.upper()} \"\n```")
-        st.markdown("**[STRATEGY_BLUEPRINT_BODY]**")
-        st.code(body, language="text")
-        st.markdown(f"**[AEST_TAG_BUNDLE]**\n```text\n{data['tags']}\n```")
+elif module == "> CONTENT":
+    st.subheader("[+] CREATIVE PIPELINE")
+    niche = st.selectbox("Select Segment", ["Cinematic Automotive", "Grooming & Skincare"])
+    if st.button("GENERATE STRATEGY"):
+        data = captions[niche]
+        st.markdown(f"**[HOOK]**\n```text\n-> {data['hook']}\n```")
+        st.markdown("**[BLUEPRINT]**")
+        st.code(data['body'], language="text")
+        st.markdown(f"**[TAGS]**\n`{data['tags']}`")
 
-elif module == "> F1_MOTORSPORT_VAULT":
-    st.subheader("[+] RACING TELEMETRY INTEL")
-    if st.button("FETCH RANDOM TELEMETRY LOG"):
-        item = random.choice(f1_facts)
-        st.markdown(f"**DATA VECTOR: {item['topic'].upper()}**")
-        st.code(item["fact"], language="text")
+elif module == "> F1_VAULT":
+    st.subheader("[+] RACING INTEL")
+    if st.button("FETCH RANDOM TELEMETRY"):
+        st.code(random.choice(f1_facts), language="text")
 
-elif module == "> RISK_CALCULATOR":
-    st.subheader("[+] ACCOUNT POSITION RISK PARAMETERS")
-    balance = st.number_input("Input Net Trading Capital ($)", min_value=0.0, value=1000.0, step=100.0)
-    risk_pct = st.slider("Position Risk Boundary (%)", 0.1, 5.0, 1.0, step=0.1)
-    
+elif module == "> RISK_CALC":
+    st.subheader("[+] RISK PARAMETERS")
+    balance = st.number_input("Capital ($)", min_value=0.0, value=1000.0)
+    risk_pct = st.slider("Risk Boundary (%)", 0.1, 5.0, 1.0)
     allowed_loss = balance * (risk_pct / 100.0)
-    st.markdown(f"### MAXIMUM LOSS ALLOWED: `${allowed_loss:,.2f}`")
-    st.markdown("
-http://googleusercontent.com/immersive_entry_chip/0
+    st.markdown(f"### MAX LOSS ALLOWED: `${allowed_loss:,.2f}`")
+    st.markdown("`Set hard stop-loss based on this matrix.`")
+
+elif module == "> LAMBO_SPECS":
+    st.subheader("[+] HURACÁN EVO SPYDER SPECS")
+    st.code("├── Engine: 5.2L V10\n├── Power: 640 HP @ 8,000 RPM\n├── Acceleration: 0-100 km/h in 3.1s\n└── Drive: 7-Speed Dual-Clutch / AWD", language="text")
+
+st.markdown("=========================================================")
+st.write("📟 OPERATION SECURE // END OF LINE.")
