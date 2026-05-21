@@ -35,7 +35,7 @@ st.markdown("""
         letter-spacing: 2px;
     }
     
-    /* Custom Container Blocks with Neon Boarder Glow */
+    /* Custom Container Blocks with Neon Border Glow */
     .neon-box {
         border: 1px solid #00f3ff;
         border-radius: 8px;
@@ -57,12 +57,10 @@ st.markdown("""
 # --- GLOBAL LIVE USER COUNTER ENGINE ---
 @st.cache_resource
 def initialize_global_telemetry():
-    # Persistent dictionary stored in server RAM across all visitors
-    return {"total_connections": 0, "active_sessions": set()}
+    return {"total_connections": 0}
 
 telemetry = initialize_global_telemetry()
 
-# Track unique sessions securely using Streamlit's temporary runtime session ID
 if "session_initialized" not in st.session_state:
     st.session_state["session_initialized"] = True
     telemetry["total_connections"] += 1
@@ -83,7 +81,7 @@ st.sidebar.subheader("🕹️ CONTROL PANEL")
 
 # Display Live Counter metrics inside a styled block
 st.sidebar.markdown(f"""
-    <div style="border: 1px solid #39ff14; padding: 10px; border-radius: 5px; background-color: #0b131a; margin-bottom: 15px; box-shadow: 0 0 8px rgba(57, 255, 20, 0.2);">
+    <div style="border: 1px solid #39ff14; padding: 10px; border-radius: 5px; background-color: #0b131a; margin-bottom: 15px; box-shadow: 0 0 8px rgba(57, 255, 20, 0.2); text-align: center;">
         <span style="color: #39ff14; font-weight: bold; font-family: monospace;">🛰️ LIVE TELEMETRY LOGS:</span><br>
         <span style="color: #ffffff; font-family: monospace; font-size: 0.9rem;">├─ Current Users: <b>{telemetry['total_connections']}</b> Active</span>
     </div>
@@ -98,6 +96,29 @@ module = st.sidebar.radio("CHOOSE SYSTEM MODULE:", [
     "Risk Parameters", 
     "Supercar Telemetry"
 ])
+
+# --- 🛠️ PROFESSIONAL DEVELOPER CREDENTIALS PANEL ---
+# Using blank lines to push the block naturally down to the bottom of the sidebar
+st.sidebar.markdown("<br><br><br><br><br>", unsafe_allow_html=True)
+st.sidebar.markdown("""
+    <div style="border: 1px solid #00f3ff; padding: 12px; border-radius: 6px; background-color: #0a0d1a; box-shadow: 0 0 10px rgba(0, 243, 255, 0.3); font-family: 'Courier New', monospace;">
+        <div style="color: #00f3ff; font-weight: bold; font-size: 0.85rem; border-bottom: 1px solid rgba(0, 243, 255, 0.3); padding-bottom: 4px; margin-bottom: 6px; text-align: center;">
+            ⚙️ CORE ARCHITECT INFO
+        </div>
+        <span style="color: #8899a6; font-size: 0.75rem;">DEVELOPER:</span><br>
+        <span style="color: #ffffff; font-weight: bold; font-size: 0.85rem;">⚡ MR. DREAMY</span><br>
+        
+        <span style="color: #8899a6; font-size: 0.75rem; margin-top: 4px; display: inline-block;">AI SUBSYSTEM:</span><br>
+        <span style="color: #ffffff; font-weight: bold; font-size: 0.85rem;">🤖 JARVIS MATRIX v1.4</span><br>
+        
+        <span style="color: #8899a6; font-size: 0.75rem; margin-top: 4px; display: inline-block;">INITIAL LAUNCH:</span><br>
+        <span style="color: #39ff14; font-weight: bold; font-size: 0.8rem;">📅 MAY 2026</span><br>
+        
+        <div style="font-size: 0.65rem; color: rgba(0, 243, 255, 0.5); text-align: center; margin-top: 8px; border-top: 1px dotted rgba(0, 243, 255, 0.2); padding-top: 4px;">
+            VERIFIED VIA GITHUB DEPLOYMENT
+        </div>
+    </div>
+""", unsafe_allow_html=True)
 
 # --- MODULE CORRIDORS ---
 if module == "🛸 Jarvis 3D Design Lab":
@@ -197,7 +218,7 @@ elif module == "Diagnostics":
                 CORE OPERATIONAL LOOP: STABLE<br>
                 BANDWIDTH ALLOCATION: MAXIMUM<br>
                 SERVER NODE LOCATION: SECURE REMOTE HOST<br>
-                CSS INJECTION COMPILATION: SUCCESSFUL
+                VERIFICATION DATA: REGISTERED TO ARCHITECT
             </span>
         </div>
     """, unsafe_allow_html=True)
@@ -238,4 +259,4 @@ elif module == "Supercar Telemetry":
 
 st.markdown("---")
 st.write("📟 SECURE CLOUD RUNTIME // END OF LINE.")
-                    
+            
