@@ -6,7 +6,7 @@ import plotly.graph_objects as go
 from datetime import datetime
 
 # Core Configuration
-st.set_page_config(page_title="Jarvis OS", page_icon="📟", layout="centered")
+st.set_page_config(page_title="JINAT OS", page_icon="📟", layout="centered")
 
 # --- CYBERPUNK NEON GLOW STYLE ENGINE ---
 st.markdown("""
@@ -65,9 +65,9 @@ if "session_initialized" not in st.session_state:
     st.session_state["session_initialized"] = True
     telemetry["total_connections"] += 1
 
-# Render Neon Branding Headers
-st.markdown('<div class="neon-title">📟 JARVIS OS : CORE TERMINAL</div>', unsafe_allow_html=True)
-st.markdown('<div class="neon-subtext">SYSTEM STATUS: ACTIVE // CLOUD NODE STREAMING</div>', unsafe_allow_html=True)
+# Render Professional Neon Branding Headers with your Name
+st.markdown('<div class="neon-title">📟 JINAT OS : CORE TERMINAL</div>', unsafe_allow_html=True)
+st.markdown('<div class="neon-subtext">SYSTEM DESIGN UNLOCKED // ARCHITECT: JINAT</div>', unsafe_allow_html=True)
 st.markdown("---")
 
 # Habit Matrix Setup
@@ -87,7 +87,9 @@ st.sidebar.markdown(f"""
     </div>
 """, unsafe_allow_html=True)
 
+# Radio selectors default to the blank workspace module to keep screens clean
 module = st.sidebar.radio("CHOOSE SYSTEM MODULE:", [
+    "🌐 System Mainframe",
     "🛸 Jarvis 3D Design Lab",
     "🚨 Habit Tracker Grid",
     "Diagnostics", 
@@ -98,7 +100,6 @@ module = st.sidebar.radio("CHOOSE SYSTEM MODULE:", [
 ])
 
 # --- 🛠️ PROFESSIONAL DEVELOPER CREDENTIALS PANEL ---
-# Using blank lines to push the block naturally down to the bottom of the sidebar
 st.sidebar.markdown("<br><br><br><br><br>", unsafe_allow_html=True)
 st.sidebar.markdown("""
     <div style="border: 1px solid #00f3ff; padding: 12px; border-radius: 6px; background-color: #0a0d1a; box-shadow: 0 0 10px rgba(0, 243, 255, 0.3); font-family: 'Courier New', monospace;">
@@ -106,10 +107,10 @@ st.sidebar.markdown("""
             ⚙️ CORE ARCHITECT INFO
         </div>
         <span style="color: #8899a6; font-size: 0.75rem;">DEVELOPER:</span><br>
-        <span style="color: #ffffff; font-weight: bold; font-size: 0.85rem;">⚡ MR. DREAMY</span><br>
+        <span style="color: #ffffff; font-weight: bold; font-size: 0.85rem;">⚡ JINAT</span><br>
         
         <span style="color: #8899a6; font-size: 0.75rem; margin-top: 4px; display: inline-block;">AI SUBSYSTEM:</span><br>
-        <span style="color: #ffffff; font-weight: bold; font-size: 0.85rem;">🤖 JARVIS MATRIX v1.4</span><br>
+        <span style="color: #ffffff; font-weight: bold; font-size: 0.85rem;">🤖 JARVIS MATRIX v1.5</span><br>
         
         <span style="color: #8899a6; font-size: 0.75rem; margin-top: 4px; display: inline-block;">INITIAL LAUNCH:</span><br>
         <span style="color: #39ff14; font-weight: bold; font-size: 0.8rem;">📅 MAY 2026</span><br>
@@ -121,10 +122,37 @@ st.sidebar.markdown("""
 """, unsafe_allow_html=True)
 
 # --- MODULE CORRIDORS ---
-if module == "🛸 Jarvis 3D Design Lab":
-    st.subheader("[+] TONY STARK HOLOGRAPHIC MESH GENERATOR")
-    st.write("Enter structural parameters to calculate visual vector fields.")
+if module == "🌐 System Mainframe":
+    # Spacious clean lander featuring a minimal blueprint of a Lamborghini Huracán
+    st.write("Welcome to the mainframe terminal workspace. Select a module from the control panel to inject data tracks.")
     
+    # Vector points modeling a low-slung geometric Huracán profile outline
+    car_x = [0, 1.2, 1.8, 2.5, 3.2, 5.2, 5.8, 7.0, 7.8, 8.5, 8.8, 8.2, 7.6, 6.8, 6.2, 2.8, 2.2, 1.2, 0.6, 0]
+    car_y = [0, 0.1, 0.6, 0.8, 1.3, 1.4, 1.1, 1.0, 0.6, 0.3, 0.0, 0.0, 0.3, 0.3, 0.0, 0.0, 0.3, 0.3, 0.0, 0]
+    
+    fig_car = go.Figure()
+    fig_car.add_trace(go.Scatter(
+        x=car_x, y=car_y,
+        mode='lines',
+        line=dict(color='#00f3ff', width=2, shape='spline'),
+        name='Huracán Silhouette',
+        hoverinfo='skip'
+    ))
+    
+    fig_car.update_layout(
+        title=dict(text="VECTOR ARCHITECTURE: HURACÁN EVO SPYDER PROFILE", font=dict(color="#39ff14", family="monospace", size=12)),
+        xaxis=dict(visible=False, range=[-0.5, 9.5]),
+        yaxis=dict(visible=False, scaleanchor="x", scaleratio=1, range=[-0.5, 2.5]),
+        paper_bgcolor='rgba(0,0,0,0)',
+        plot_bgcolor='rgba(0,0,0,0)',
+        margin=dict(l=10, r=10, b=10, t=40),
+        height=220
+    )
+    st.plotly_chart(fig_car, use_container_width=True, config={'displayModeBar': False})
+    st.caption("Terminal Idle Node // Awaiting System Instruction Input Matrix.")
+
+elif module == "🛸 Jarvis 3D Design Lab":
+    st.subheader("[+] TONY STARK HOLOGRAPHIC MESH GENERATOR")
     component = st.selectbox("Select Target Component Matrix:", ["Aero Spoiler Array", "Supercar Wheel Rim Node", "V10 Engine Block Cylinder"])
     scale_factor = st.slider("Dimensional Scale Parameter:", 0.5, 2.5, 1.0)
     command = st.text_input("Voice/Text Override Command Protocol:", value="Jarvis, initialize rapid prototyping structural sweep.")
@@ -132,32 +160,22 @@ if module == "🛸 Jarvis 3D Design Lab":
     if st.button("RUN 3D STRUCTURAL COMPILATION"):
         st.info(f"Processing command: '{command}'")
         fig = go.Figure()
-        
         if component == "Aero Spoiler Array":
-            u = np.linspace(-2, 2, 20)
-            v = np.linspace(-1, 1, 20)
-            U, V = np.meshgrid(u, v)
+            u = np.linspace(-2, 2, 20); v = np.linspace(-1, 1, 20); U, V = np.meshgrid(u, v)
             X, Y = scale_factor * U, scale_factor * V
             Z = scale_factor * 0.15 * (U**2 - V**2)
             fig.add_trace(go.Surface(x=X, y=Y, z=Z, colorscale='Viridis', showscale=False))
-            
         elif component == "Supercar Wheel Rim Node":
-            u = np.linspace(0, 2*np.pi, 24)
-            v = np.linspace(0, 2*np.pi, 24)
-            U, V = np.meshgrid(u, v)
+            u = np.linspace(0, 2*np.pi, 24); v = np.linspace(0, 2*np.pi, 24); U, V = np.meshgrid(u, v)
             R, r = 2.0 * scale_factor, 0.6 * scale_factor
-            X = (R + r * np.cos(V)) * np.cos(U)
-            Y = (R + r * np.cos(V)) * np.sin(U)
-            Z = r * np.sin(V)
+            X = (R + r * np.cos(V)) * np.cos(U); Y = (R + r * np.cos(V)) * np.sin(U); Z = r * np.sin(V)
             fig.add_trace(go.Surface(x=X, y=Y, z=Z, colorscale='Cividis', showscale=False))
-            
         else:
             colors = ['#00FFCC', '#0099FF']
             for b_idx, bank in enumerate([-1, 1]): 
                 angle = bank * np.pi / 5  
                 for i in range(5): 
-                    z_offset = (i - 2) * 1.6 * scale_factor 
-                    x_center = bank * 1.0 * scale_factor
+                    z_offset = (i - 2) * 1.6 * scale_factor; x_center = bank * 1.0 * scale_factor
                     u, h = np.linspace(0, 2*np.pi, 16), np.linspace(-1.2, 1.2, 10)
                     x_cyl, y_cyl, z_cyl = [], [], []
                     for h_val in h:
@@ -165,19 +183,9 @@ if module == "🛸 Jarvis 3D Design Lab":
                             rx = (0.45 * scale_factor) * np.cos(angle_val) * np.cos(angle) - h_val * np.sin(angle) + x_center
                             ry = (0.45 * scale_factor) * np.cos(angle_val) * np.sin(angle) + h_val * np.cos(angle)
                             x_cyl.append(rx); y_cyl.append(ry); z_cyl.append(h_val + z_offset)
-                    
                     fig.add_trace(go.Mesh3d(x=x_cyl, y=y_cyl, z=z_cyl, alphahull=0, color=colors[b_idx], opacity=0.45, showlegend=False))
                     fig.add_trace(go.Scatter3d(x=x_cyl[::3], y=y_cyl[::3], z=z_cyl[::3], mode='lines', line=dict(color='lime', width=1.5), showlegend=False))
-
-        fig.update_layout(
-            scene=dict(
-                xaxis=dict(backgroundcolor="black", gridcolor="#113311", showbackground=True, zerolinecolor="lime"),
-                yaxis=dict(backgroundcolor="black", gridcolor="#113311", showbackground=True, zerolinecolor="lime"),
-                zaxis=dict(backgroundcolor="black", gridcolor="#113311", showbackground=True, zerolinecolor="lime"),
-                aspectmode='data'
-            ),
-            margin=dict(l=0, r=0, b=0, t=0), paper_bgcolor='black', plot_bgcolor='black'
-        )
+        fig.update_layout(scene=dict(xaxis=dict(backgroundcolor="black", gridcolor="#113311", showbackground=True, zerolinecolor="lime"), yaxis=dict(backgroundcolor="black", gridcolor="#113311", showbackground=True, zerolinecolor="lime"), zaxis=dict(backgroundcolor="black", gridcolor="#113311", showbackground=True, zerolinecolor="lime"), aspectmode='data'), margin=dict(l=0, r=0, b=0, t=0), paper_bgcolor='black', plot_bgcolor='black')
         st.plotly_chart(fig, use_container_width=True)
 
 elif module == "🚨 Habit Tracker Grid":
@@ -185,17 +193,12 @@ elif module == "🚨 Habit Tracker Grid":
     with st.expander("💾 Sync / Load Previous Progress Data"):
         uploaded_data = st.text_area("Paste your backup code string here:")
         history = json.loads(uploaded_data) if uploaded_data else {}
-        
     current_date = datetime.now().strftime("%Y-%m-%d")
     target_date = st.text_input("Logging Date (YYYY-MM-DD):", value=current_date)
-
-    if target_date not in history:
-        history[target_date] = {habit: False for habit in HABITS}
-
+    if target_date not in history: history[target_date] = {habit: False for habit in HABITS}
     st.markdown("### ❌ HABIT EXECUTION CHECKLIST")
     for habit in HABITS:
         history[target_date][habit] = st.checkbox(f"Mark ❌ for: {habit}", value=history[target_date].get(habit, False))
-
     st.markdown("---")
     st.markdown("### 📈 MONTHLY CONSISTENCY METRICS")
     if len(history) > 0:
@@ -205,23 +208,12 @@ elif module == "🚨 Habit Tracker Grid":
             st.write(f"**{habit}**")
             st.progress(int(pct))
             st.caption(f"Consistency Rating: {pct:.1f}% ({completed}/{len(history)} Days)")
-    
     st.markdown("---")
-    st.markdown("### 📤 SAVE PROGRESS DATA")
     st.code(json.dumps(history), language="json")
 
 elif module == "Diagnostics":
     st.subheader("[+] SYSTEM DIAGNOSTICS")
-    st.markdown("""
-        <div class="neon-box">
-            <span style="color: #39ff14; font-family: monospace;">
-                CORE OPERATIONAL LOOP: STABLE<br>
-                BANDWIDTH ALLOCATION: MAXIMUM<br>
-                SERVER NODE LOCATION: SECURE REMOTE HOST<br>
-                VERIFICATION DATA: REGISTERED TO ARCHITECT
-            </span>
-        </div>
-    """, unsafe_allow_html=True)
+    st.markdown("""<div class="neon-box"><span style="color: #39ff14; font-family: monospace;">CORE OPERATIONAL LOOP: STABLE<br>SERVER NODE LOCATION: SECURE REMOTE HOST<br>VERIFICATION DATA: REGISTERED TO ARCHITECT JINAT</span></div>""", unsafe_allow_html=True)
 
 elif module == "Content Matrix":
     st.subheader("[+] CREATIVE PIPELINE")
@@ -259,4 +251,4 @@ elif module == "Supercar Telemetry":
 
 st.markdown("---")
 st.write("📟 SECURE CLOUD RUNTIME // END OF LINE.")
-            
+    
