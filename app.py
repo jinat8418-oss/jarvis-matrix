@@ -57,7 +57,7 @@ st.markdown("""
 # --- GLOBAL LIVE USER COUNTER ENGINE ---
 @st.cache_resource
 def initialize_global_telemetry():
-    return {"total_connections": 0}
+    return {"total_connections": 0, "saved_vault_logs": {}}
 
 telemetry = initialize_global_telemetry()
 
@@ -90,8 +90,9 @@ st.sidebar.markdown(f"""
 # Radio selectors default to the blank workspace module to keep screens clean
 module = st.sidebar.radio("CHOOSE SYSTEM MODULE:", [
     "🌐 System Mainframe",
-    "🛸 Jarvis 3D Design Lab",
+    "🤖 Jarvis AI Assistant",
     "🚨 Habit Tracker Grid",
+    "🛸 Jarvis 3D Design Lab",
     "Diagnostics", 
     "Content Matrix", 
     "F1 Motorsport Vault", 
@@ -110,7 +111,7 @@ st.sidebar.markdown("""
         <span style="color: #ffffff; font-weight: bold; font-size: 0.85rem;">⚡ JINAT</span><br>
         
         <span style="color: #8899a6; font-size: 0.75rem; margin-top: 4px; display: inline-block;">AI SUBSYSTEM:</span><br>
-        <span style="color: #ffffff; font-weight: bold; font-size: 0.85rem;">🤖 JARVIS MATRIX v1.5</span><br>
+        <span style="color: #ffffff; font-weight: bold; font-size: 0.85rem;">🤖 JARVIS MATRIX v1.8</span><br>
         
         <span style="color: #8899a6; font-size: 0.75rem; margin-top: 4px; display: inline-block;">INITIAL LAUNCH:</span><br>
         <span style="color: #39ff14; font-weight: bold; font-size: 0.8rem;">📅 MAY 2026</span><br>
@@ -123,33 +124,147 @@ st.sidebar.markdown("""
 
 # --- MODULE CORRIDORS ---
 if module == "🌐 System Mainframe":
-    # Spacious clean lander featuring a minimal blueprint of a Lamborghini Huracán
-    st.write("Welcome to the mainframe terminal workspace. Select a module from the control panel to inject data tracks.")
+    st.write("Welcome to the mainframe terminal workspace. Adjust structural vectors below to modify the active blueprint profile.")
     
-    # Vector points modeling a low-slung geometric Huracán profile outline
-    car_x = [0, 1.2, 1.8, 2.5, 3.2, 5.2, 5.8, 7.0, 7.8, 8.5, 8.8, 8.2, 7.6, 6.8, 6.2, 2.8, 2.2, 1.2, 0.6, 0]
-    car_y = [0, 0.1, 0.6, 0.8, 1.3, 1.4, 1.1, 1.0, 0.6, 0.3, 0.0, 0.0, 0.3, 0.3, 0.0, 0.0, 0.3, 0.3, 0.0, 0]
+    st.markdown("### 🛠️ ACTIVE BLUEPRINT SHAPING TUNNEL")
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        roof_height = st.slider("Chassis Roof Cap:", 0.8, 1.5, 1.15, step=0.05)
+    with col2:
+        ground_clearance = st.slider("Stance Splitter Drop:", 0.02, 0.25, 0.10, step=0.02)
+    with col3:
+        spoiler_kick = st.slider("Rear Spoiler Extension:", 0.90, 1.25, 1.05, step=0.05)
+        
+    car_x = [0.0, 1.2, 1.6, 2.3, 2.7, 4.2, 5.0, 5.5, 6.7, 7.3, 7.8, 8.0, 7.7, 7.3, 6.9, 6.9, 6.4, 5.5, 2.4, 1.9, 1.4, 1.4, 0.9, 0.0]
+    car_y = [ground_clearance, ground_clearance + 0.05, 0.45, 0.5, 0.95, roof_height, roof_height - 0.03, roof_height - 0.1, 0.98, 0.98, spoiler_kick, 0.4, ground_clearance, ground_clearance, 0.35, 0.35, ground_clearance, ground_clearance, ground_clearance, ground_clearance, 0.35, 0.35, ground_clearance, ground_clearance]
     
     fig_car = go.Figure()
     fig_car.add_trace(go.Scatter(
         x=car_x, y=car_y,
-        mode='lines',
-        line=dict(color='#00f3ff', width=2, shape='spline'),
-        name='Huracán Silhouette',
+        mode='lines+markers',
+        line=dict(color='#00f3ff', width=2.5),
+        marker=dict(color='#39ff14', size=4, opacity=0.9),
+        name='Huracán EVO Silhouette',
         hoverinfo='skip'
     ))
     
     fig_car.update_layout(
-        title=dict(text="VECTOR ARCHITECTURE: HURACÁN EVO SPYDER PROFILE", font=dict(color="#39ff14", family="monospace", size=12)),
-        xaxis=dict(visible=False, range=[-0.5, 9.5]),
-        yaxis=dict(visible=False, scaleanchor="x", scaleratio=1, range=[-0.5, 2.5]),
+        title=dict(text="LAMBORGHINI HURACÁN EVO SPYDER : INTERACTIVE PROFILE", font=dict(color="#39ff14", family="monospace", size=12)),
+        xaxis=dict(visible=False, range=[-0.5, 8.5]),
+        yaxis=dict(visible=False, scaleanchor="x", scaleratio=1, range=[-0.2, 1.6]),
         paper_bgcolor='rgba(0,0,0,0)',
         plot_bgcolor='rgba(0,0,0,0)',
         margin=dict(l=10, r=10, b=10, t=40),
-        height=220
+        height=240
     )
     st.plotly_chart(fig_car, use_container_width=True, config={'displayModeBar': False})
-    st.caption("Terminal Idle Node // Awaiting System Instruction Input Matrix.")
+    st.caption("Aesthetic Geometry Engine // Interactive Client-Side Blueprint Modulation Matrix.")
+
+elif module == "🤖 Jarvis AI Assistant":
+    st.subheader("[+] DYNAMIC JARVIS ALGORITHMIC CONSOLE")
+    st.write("Type any question below. Jarvis parses sentences dynamically to construct randomized, context-aware answers every single execution loop.")
+    
+    if "chat_history" not in st.session_state:
+        st.session_state["chat_history"] = [
+            {"role": "jarvis", "text": "Jarvis matrix synchronized. Text input lanes fully initialized, sir. Feed me data commands."}
+        ]
+    
+    # Print chat history log elements with clean borders
+    for message in st.session_state["chat_history"]:
+        if message["role"] == "user":
+            st.markdown(f"""<div style='text-align: right; background-color: #1a1f33; padding: 10px; border-radius: 10px; margin-bottom: 10px; border-right: 3px solid #00f3ff; display: inline-block; float: right; clear: both; max-width: 80%; font-family: monospace;'><b>You:</b> {message['text']}</div>""", unsafe_allow_html=True)
+        else:
+            st.markdown(f"""<div style='text-align: left; background-color: #0b131a; padding: 10px; border-radius: 10px; margin-bottom: 10px; border-left: 3px solid #39ff14; display: inline-block; float: left; clear: both; max-width: 80%; font-family: monospace; color: #39ff14;'><b>JARVIS:</b> {message['text']}</div>""", unsafe_allow_html=True)
+            
+    st.markdown("<div style='clear: both;'><br></div>", unsafe_allow_html=True)
+    
+    with st.form(key="chat_form", clear_on_submit=True):
+        user_input = st.text_input("Transmit voice or text string override directly to Jarvis:")
+        submit_chat = st.form_submit_button("COMPILE AND TRANSMIT INPUT")
+        
+        if submit_chat and user_input:
+            st.session_state["chat_history"].append({"role": "user", "text": user_input})
+            cmd = user_input.lower()
+            
+            # Randomized linguistic components for infinite response variance
+            prefixes = ["Scanning structural arrays... ", "Ah, an intriguing inquiry, sir. ", "Processing mainframe parameters... ", "Direct directive recorded. "]
+            suffixes = [" // Telemetry stream is clean.", " // Standing by for further calculation updates.", " // Verified via current local terminal nodes.", " // Execution complete."]
+            
+            if "hello" in cmd or "hi" in cmd or "hey" in cmd:
+                core_answers = [
+                    f"Greetings! I am online. There are currently {telemetry['total_connections']} active users connecting to Architect Jinat's mainframe.",
+                    "Hello, operator. All systems are green and awaiting input instructions.",
+                    "System linked successfully. Welcome to the terminal control panel."
+                ]
+            elif "romel" in cmd:
+                core_answers = [
+                    "Detecting Friend Node: Romel. Access granted. Status: Shocked by codebase progression metrics.",
+                    "User profile 'Romel' loaded. Running system audit: input tracking history clear.",
+                    "Romel confirmed on secondary display block. Glad to have you navigating our interfaces."
+                ]
+            elif "specs" in cmd or "lambo" in cmd or "car" in cmd:
+                core_answers = [
+                    "Extracting mechanical details: Lamborghini Huracán EVO Spyder profile mapped with mid-mounted 5.2L V10.",
+                    "Vector geometry maps loaded. 640 horses verified via structural chassis equations.",
+                    "Chassis vector parameters initialized. Check out the blueprint modification panel on the Mainframe tab."
+                ]
+            elif "status" in cmd or "diagnostics" in cmd:
+                core_answers = [
+                    f"Mainframe nodes are operational. System capacity streaming smoothly with {telemetry['total_connections']} concurrent user sessions.",
+                    "Firewalls steady. Diagnostic response loop calculated in 0.004 seconds.",
+                    "Local cloud servers running optimally. No structural database ruptures logged."
+                ]
+            else:
+                # Infinite random combination generator for completely unmapped custom user queries
+                core_answers = [
+                    f"Analyzing your phrase '{user_input}'. My system architecture suggests an optimal configuration array.",
+                    "Compiling neural responses... Data streams suggest Architect Jinat's rules are absolute.",
+                    "Interesting parameters. Re-routing computational bandwidth to match this instruction request.",
+                    "Text package processed successfully. Encryption levels running at max limits."
+                ]
+                
+            # Build an entirely randomized message composition string
+            reply = random.choice(prefixes) + random.choice(core_answers) + random.choice(suffixes)
+            st.session_state["chat_history"].append({"role": "jarvis", "text": reply})
+            st.rerun()
+
+elif module == "🚨 Habit Tracker Grid":
+    st.subheader("[+] UPGRADED DIGITAL HABIT TRACKER MATRIX")
+    st.write("Track daily performance targets. Hit the permanent record button below to anchor data directly down into the global database structure.")
+    
+    current_date = datetime.now().strftime("%Y-%m-%d")
+    target_date = st.date_input("Logging Target Date Selection:", datetime.now())
+    date_str = str(target_date)
+
+    if date_str not in telemetry["saved_vault_logs"]:
+        telemetry["saved_vault_logs"][date_str] = {habit: False for habit in HABITS}
+
+    st.markdown("### ❌ LOG NEW PROGRESSION RECAP")
+    for habit in HABITS:
+        telemetry["saved_vault_logs"][date_str][habit] = st.checkbox(
+            f"Set Complete: {habit}", 
+            value=telemetry["saved_vault_logs"][date_str].get(habit, False)
+        )
+
+    # --- THE IMPROVED TRACKER VAULT ACTION ---
+    if st.button("💾 LOCK LOG INTO SECURE GLOBAL RECORD"):
+        st.success(f"Success! Progression markers safely cached into system records for date: {date_str}")
+
+    st.markdown("---")
+    st.markdown("### 📈 AGGREGATED HISTORIC PERFORMANCE")
+    if len(telemetry["saved_vault_logs"]) > 0:
+        for habit in HABITS:
+            completed = sum(1 for d in telemetry["saved_vault_logs"] if telemetry["saved_vault_logs"][d].get(habit, False))
+            total_days = len(telemetry["saved_vault_logs"])
+            pct = (completed / total_days) * 100
+            
+            st.write(f"**{habit}**")
+            st.progress(int(pct))
+            st.caption(f"Consistency Rating: {pct:.1f}% ({completed}/{total_days} Days Matrixed)")
+            
+    st.markdown("---")
+    st.markdown("### 📤 EXPORT CODE BACKUP ENVELOPE")
+    st.code(json.dumps(telemetry["saved_vault_logs"]), language="json")
 
 elif module == "🛸 Jarvis 3D Design Lab":
     st.subheader("[+] TONY STARK HOLOGRAPHIC MESH GENERATOR")
@@ -187,29 +302,6 @@ elif module == "🛸 Jarvis 3D Design Lab":
                     fig.add_trace(go.Scatter3d(x=x_cyl[::3], y=y_cyl[::3], z=z_cyl[::3], mode='lines', line=dict(color='lime', width=1.5), showlegend=False))
         fig.update_layout(scene=dict(xaxis=dict(backgroundcolor="black", gridcolor="#113311", showbackground=True, zerolinecolor="lime"), yaxis=dict(backgroundcolor="black", gridcolor="#113311", showbackground=True, zerolinecolor="lime"), zaxis=dict(backgroundcolor="black", gridcolor="#113311", showbackground=True, zerolinecolor="lime"), aspectmode='data'), margin=dict(l=0, r=0, b=0, t=0), paper_bgcolor='black', plot_bgcolor='black')
         st.plotly_chart(fig, use_container_width=True)
-
-elif module == "🚨 Habit Tracker Grid":
-    st.subheader("[+] DIGITAL HABIT TRACKER MATRIX")
-    with st.expander("💾 Sync / Load Previous Progress Data"):
-        uploaded_data = st.text_area("Paste your backup code string here:")
-        history = json.loads(uploaded_data) if uploaded_data else {}
-    current_date = datetime.now().strftime("%Y-%m-%d")
-    target_date = st.text_input("Logging Date (YYYY-MM-DD):", value=current_date)
-    if target_date not in history: history[target_date] = {habit: False for habit in HABITS}
-    st.markdown("### ❌ HABIT EXECUTION CHECKLIST")
-    for habit in HABITS:
-        history[target_date][habit] = st.checkbox(f"Mark ❌ for: {habit}", value=history[target_date].get(habit, False))
-    st.markdown("---")
-    st.markdown("### 📈 MONTHLY CONSISTENCY METRICS")
-    if len(history) > 0:
-        for habit in HABITS:
-            completed = sum(1 for d in history if history[d].get(habit, False))
-            pct = (completed / len(history)) * 100
-            st.write(f"**{habit}**")
-            st.progress(int(pct))
-            st.caption(f"Consistency Rating: {pct:.1f}% ({completed}/{len(history)} Days)")
-    st.markdown("---")
-    st.code(json.dumps(history), language="json")
 
 elif module == "Diagnostics":
     st.subheader("[+] SYSTEM DIAGNOSTICS")
@@ -251,4 +343,3 @@ elif module == "Supercar Telemetry":
 
 st.markdown("---")
 st.write("📟 SECURE CLOUD RUNTIME // END OF LINE.")
-    
