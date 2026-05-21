@@ -6,10 +6,70 @@ import plotly.graph_objects as go
 from datetime import datetime
 
 # Core Configuration
-st.set_page_config(page_title="Jarvis OS", page_icon="📟")
+st.set_page_config(page_title="Jarvis OS", page_icon="📟", layout="centered")
 
-st.title("📟 JARVIS OS : CORE TERMINAL")
-st.write("SYSTEM STATUS: ACTIVE // CLOUD NODE CONNECTED")
+# --- CYBERPUNK NEON GLOW STYLE ENGINE ---
+st.markdown("""
+    <style>
+    /* Main Background adjustments */
+    .stApp {
+        background-color: #0d0e15;
+        color: #e0e6ed;
+    }
+    
+    /* Neon Glow Headers */
+    .neon-title {
+        font-family: 'Courier New', monospace;
+        color: #00f3ff;
+        text-shadow: 0 0 10px #00f3ff, 0 0 20px #00f3ff;
+        font-weight: bold;
+        font-size: 2.2rem;
+        margin-bottom: 5px;
+    }
+    
+    .neon-subtext {
+        color: #39ff14;
+        font-family: 'Courier New', monospace;
+        text-shadow: 0 0 8px rgba(57, 255, 20, 0.6);
+        font-size: 0.9rem;
+        letter-spacing: 2px;
+    }
+    
+    /* Custom Container Blocks with Neon Boarder Glow */
+    .neon-box {
+        border: 1px solid #00f3ff;
+        border-radius: 8px;
+        padding: 15px;
+        background-color: #121622;
+        box-shadow: 0 0 10px rgba(0, 243, 255, 0.25);
+        margin-bottom: 15px;
+    }
+    
+    /* Sidebar adjustments */
+    section[data-testid="stSidebar"] {
+        background-color: #070913 !important;
+        border-right: 1px solid #39ff14;
+        box-shadow: 2px 0px 10px rgba(57, 255, 20, 0.15);
+    }
+    </style>
+""", unsafe_allow_html=True)
+
+# --- GLOBAL LIVE USER COUNTER ENGINE ---
+@st.cache_resource
+def initialize_global_telemetry():
+    # Persistent dictionary stored in server RAM across all visitors
+    return {"total_connections": 0, "active_sessions": set()}
+
+telemetry = initialize_global_telemetry()
+
+# Track unique sessions securely using Streamlit's temporary runtime session ID
+if "session_initialized" not in st.session_state:
+    st.session_state["session_initialized"] = True
+    telemetry["total_connections"] += 1
+
+# Render Neon Branding Headers
+st.markdown('<div class="neon-title">📟 JARVIS OS : CORE TERMINAL</div>', unsafe_allow_html=True)
+st.markdown('<div class="neon-subtext">SYSTEM STATUS: ACTIVE // CLOUD NODE STREAMING</div>', unsafe_allow_html=True)
 st.markdown("---")
 
 # Habit Matrix Setup
@@ -18,8 +78,17 @@ HABITS = [
     "Hydration", "Social Momentum", "No Junk", "Reading 10 Pages", "Day/Night Skincare"
 ]
 
-# Navigation System
+# --- SIDEBAR CONTROL PANEL ---
 st.sidebar.subheader("🕹️ CONTROL PANEL")
+
+# Display Live Counter metrics inside a styled block
+st.sidebar.markdown(f"""
+    <div style="border: 1px solid #39ff14; padding: 10px; border-radius: 5px; background-color: #0b131a; margin-bottom: 15px; box-shadow: 0 0 8px rgba(57, 255, 20, 0.2);">
+        <span style="color: #39ff14; font-weight: bold; font-family: monospace;">🛰️ LIVE TELEMETRY LOGS:</span><br>
+        <span style="color: #ffffff; font-family: monospace; font-size: 0.9rem;">├─ Current Users: <b>{telemetry['total_connections']}</b> Active</span>
+    </div>
+""", unsafe_allow_html=True)
+
 module = st.sidebar.radio("CHOOSE SYSTEM MODULE:", [
     "🛸 Jarvis 3D Design Lab",
     "🚨 Habit Tracker Grid",
@@ -30,32 +99,28 @@ module = st.sidebar.radio("CHOOSE SYSTEM MODULE:", [
     "Supercar Telemetry"
 ])
 
+# --- MODULE CORRIDORS ---
 if module == "🛸 Jarvis 3D Design Lab":
     st.subheader("[+] TONY STARK HOLOGRAPHIC MESH GENERATOR")
-    st.write("Simulating Jarvis spatial design vectors. Enter structural parameters to process.")
+    st.write("Enter structural parameters to calculate visual vector fields.")
     
-    # User Inputs
     component = st.selectbox("Select Target Component Matrix:", ["Aero Spoiler Array", "Supercar Wheel Rim Node", "V10 Engine Block Cylinder"])
     scale_factor = st.slider("Dimensional Scale Parameter:", 0.5, 2.5, 1.0)
     command = st.text_input("Voice/Text Override Command Protocol:", value="Jarvis, initialize rapid prototyping structural sweep.")
     
     if st.button("RUN 3D STRUCTURAL COMPILATION"):
-        st.info(f"Processing command: '{command}'... Generating holographic telemetry array.")
-        
+        st.info(f"Processing command: '{command}'")
         fig = go.Figure()
         
         if component == "Aero Spoiler Array":
-            # Parabolic wing profile
             u = np.linspace(-2, 2, 20)
             v = np.linspace(-1, 1, 20)
             U, V = np.meshgrid(u, v)
-            X = scale_factor * U
-            Y = scale_factor * V
+            X, Y = scale_factor * U, scale_factor * V
             Z = scale_factor * 0.15 * (U**2 - V**2)
             fig.add_trace(go.Surface(x=X, y=Y, z=Z, colorscale='Viridis', showscale=False))
             
         elif component == "Supercar Wheel Rim Node":
-            # Clean structural torus ring
             u = np.linspace(0, 2*np.pi, 24)
             v = np.linspace(0, 2*np.pi, 24)
             U, V = np.meshgrid(u, v)
@@ -66,82 +131,50 @@ if module == "🛸 Jarvis 3D Design Lab":
             fig.add_trace(go.Surface(x=X, y=Y, z=Z, colorscale='Cividis', showscale=False))
             
         else:
-            # TRUE V10 ENGINE BLOCK MECHANICS: 10 individual, non-connected physical cylinders
             colors = ['#00FFCC', '#0099FF']
-            
             for b_idx, bank in enumerate([-1, 1]): 
-                angle = bank * np.pi / 5  # Sharp V-angle displacement (~36 degrees)
-                
-                for i in range(5): # 5 cylinders on each side
-                    z_offset = (i - 2) * 1.6 * scale_factor # Linear spacing along block length
+                angle = bank * np.pi / 5  
+                for i in range(5): 
+                    z_offset = (i - 2) * 1.6 * scale_factor 
                     x_center = bank * 1.0 * scale_factor
-                    
-                    # Generate standalone cylinder geometry coordinates
-                    u = np.linspace(0, 2*np.pi, 16)
-                    h = np.linspace(-1.2, 1.2, 10)
-                    
+                    u, h = np.linspace(0, 2*np.pi, 16), np.linspace(-1.2, 1.2, 10)
                     x_cyl, y_cyl, z_cyl = [], [], []
+                    for h_val in h:
+                        for angle_val in u:
+                            rx = (0.45 * scale_factor) * np.cos(angle_val) * np.cos(angle) - h_val * np.sin(angle) + x_center
+                            ry = (0.45 * scale_factor) * np.cos(angle_val) * np.sin(angle) + h_val * np.cos(angle)
+                            x_cyl.append(rx); y_cyl.append(ry); z_cyl.append(h_val + z_offset)
                     
-                    for r_val in [0.45 * scale_factor]: # Cylinder radius
-                        for h_val in h:
-                            for angle_val in u:
-                                # Apply rotation parameters to tilt the cylinders into a solid V-shape
-                                nx = r_val * np.cos(angle_val)
-                                ny = h_val
-                                
-                                rx = nx * np.cos(angle) - ny * np.sin(angle) + x_center
-                                ry = nx * np.sin(angle) + ny * np.cos(angle)
-                                
-                                x_cyl.append(rx)
-                                y_cyl.append(ry)
-                                z_cyl.append(h_val + z_offset)
-                    
-                    # Mount each cylinder as its own individual 3D solid mesh trace
-                    fig.add_trace(go.Mesh3d(
-                        x=x_cyl, y=y_cyl, z=z_cyl,
-                        alphahull=0,
-                        color=colors[b_idx],
-                        opacity=0.45,
-                        name=f"Cylinder {i+1} [Bank {'A' if bank==-1 else 'B'}]",
-                        showlegend=False
-                    ))
-                    
-                    # Add bright neon wireframe borders over each cylinder profile
-                    fig.add_trace(go.Scatter3d(
-                        x=x_cyl[::3], y=y_cyl[::3], z=z_cyl[::3],
-                        mode='lines',
-                        line=dict(color='lime', width=1.5),
-                        showlegend=False
-                    ))
+                    fig.add_trace(go.Mesh3d(x=x_cyl, y=y_cyl, z=z_cyl, alphahull=0, color=colors[b_idx], opacity=0.45, showlegend=False))
+                    fig.add_trace(go.Scatter3d(x=x_cyl[::3], y=y_cyl[::3], z=z_cyl[::3], mode='lines', line=dict(color='lime', width=1.5), showlegend=False))
 
-        # Core Dark Terminal Styling Layout
         fig.update_layout(
             scene=dict(
-                xaxis=dict(backgroundcolor="black", gridcolor="#113311", showbackground=True, zerolinecolor="lime", title="X-VECTOR"),
-                yaxis=dict(backgroundcolor="black", gridcolor="#113311", showbackground=True, zerolinecolor="lime", title="Y-VECTOR"),
-                zaxis=dict(backgroundcolor="black", gridcolor="#113311", showbackground=True, zerolinecolor="lime", title="Z-BLOCK"),
+                xaxis=dict(backgroundcolor="black", gridcolor="#113311", showbackground=True, zerolinecolor="lime"),
+                yaxis=dict(backgroundcolor="black", gridcolor="#113311", showbackground=True, zerolinecolor="lime"),
+                zaxis=dict(backgroundcolor="black", gridcolor="#113311", showbackground=True, zerolinecolor="lime"),
                 aspectmode='data'
             ),
-            margin=dict(l=0, r=0, b=0, t=0),
-            paper_bgcolor='black',
-            plot_bgcolor='black'
+            margin=dict(l=0, r=0, b=0, t=0), paper_bgcolor='black', plot_bgcolor='black'
         )
-        
         st.plotly_chart(fig, use_container_width=True)
-        st.success("🤖 MATRIX PATCH COMPLETE. V10 BLOCK TELEMETRY STABLE.")
 
-# Keep all other sub-modules running perfectly below
 elif module == "🚨 Habit Tracker Grid":
     st.subheader("[+] DIGITAL HABIT TRACKER MATRIX")
     with st.expander("💾 Sync / Load Previous Progress Data"):
-        uploaded_data = st.text_area("Paste your backup code string here to load past history:")
+        uploaded_data = st.text_area("Paste your backup code string here:")
         history = json.loads(uploaded_data) if uploaded_data else {}
+        
     current_date = datetime.now().strftime("%Y-%m-%d")
     target_date = st.text_input("Logging Date (YYYY-MM-DD):", value=current_date)
-    if target_date not in history: history[target_date] = {habit: False for habit in HABITS}
+
+    if target_date not in history:
+        history[target_date] = {habit: False for habit in HABITS}
+
     st.markdown("### ❌ HABIT EXECUTION CHECKLIST")
     for habit in HABITS:
         history[target_date][habit] = st.checkbox(f"Mark ❌ for: {habit}", value=history[target_date].get(habit, False))
+
     st.markdown("---")
     st.markdown("### 📈 MONTHLY CONSISTENCY METRICS")
     if len(history) > 0:
@@ -151,12 +184,23 @@ elif module == "🚨 Habit Tracker Grid":
             st.write(f"**{habit}**")
             st.progress(int(pct))
             st.caption(f"Consistency Rating: {pct:.1f}% ({completed}/{len(history)} Days)")
+    
     st.markdown("---")
+    st.markdown("### 📤 SAVE PROGRESS DATA")
     st.code(json.dumps(history), language="json")
 
 elif module == "Diagnostics":
     st.subheader("[+] SYSTEM DIAGNOSTICS")
-    st.text("Core Operational Loop: STABLE\nBandwidth Allocation: MAXIMUM\nAll nodes reporting green.")
+    st.markdown("""
+        <div class="neon-box">
+            <span style="color: #39ff14; font-family: monospace;">
+                CORE OPERATIONAL LOOP: STABLE<br>
+                BANDWIDTH ALLOCATION: MAXIMUM<br>
+                SERVER NODE LOCATION: SECURE REMOTE HOST<br>
+                CSS INJECTION COMPILATION: SUCCESSFUL
+            </span>
+        </div>
+    """, unsafe_allow_html=True)
 
 elif module == "Content Matrix":
     st.subheader("[+] CREATIVE PIPELINE")
@@ -194,3 +238,4 @@ elif module == "Supercar Telemetry":
 
 st.markdown("---")
 st.write("📟 SECURE CLOUD RUNTIME // END OF LINE.")
+                    
