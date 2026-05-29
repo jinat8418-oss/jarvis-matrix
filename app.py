@@ -1,5 +1,10 @@
 import streamlit as st
-import streamlit.components.v1 as components
+import random
+import json
+import numpy as np
+import plotly.graph_objects as go
+from datetime import datetime
+import time
 
 # Core Configuration
 st.set_page_config(page_title="JINAT OS", page_icon="📟", layout="centered")
@@ -7,11 +12,14 @@ st.set_page_config(page_title="JINAT OS", page_icon="📟", layout="centered")
 # --- CYBERPUNK NEON GLOW STYLE ENGINE ---
 st.markdown("""
     <style>
-    .stApp { background-color: #0d0e15; color: #e0e6ed; }
+    .stApp {
+        background-color: #0d0e15;
+        color: #e0e6ed;
+    }
     .neon-title {
         font-family: 'Courier New', monospace;
         color: #00f3ff;
-        text-shadow: 0 0 10px #00f3ff;
+        text-shadow: 0 0 10px #00f3ff, 0 0 20px #00f3ff;
         font-weight: bold;
         font-size: 2.2rem;
         margin-bottom: 5px;
@@ -23,74 +31,74 @@ st.markdown("""
         font-size: 0.9rem;
         letter-spacing: 2px;
     }
-    section[data-testid="stSidebar"] { background-color: #070913 !important; border-right: 1px solid #39ff14; }
+    .neon-box {
+        border: 1px solid #00f3ff;
+        border-radius: 8px;
+        padding: 15px;
+        background-color: #121622;
+        box-shadow: 0 0 10px rgba(0, 243, 255, 0.25);
+        margin-bottom: 15px;
+    }
+    section[data-testid="stSidebar"] {
+        background-color: #070913 !important;
+        border-right: 1px solid #39ff14;
+        box-shadow: 2px 0px 10px rgba(57, 255, 20, 0.15);
+    }
     </style>
 """, unsafe_allow_html=True)
+
+# --- GLOBAL TELEMETRY ENGINE ---
+@st.cache_resource
+def initialize_global_telemetry():
+    return {"total_connections": 12}
+
+telemetry = initialize_global_telemetry()
+
+# --- PERSISTENT SYSTEMS LOG ARCHIVE ENGINE ---
+if "tracker_vault" not in st.session_state:
+    st.session_state["tracker_vault"] = {}
+
+if "global_incident_archive" not in st.session_state:
+    st.session_state["global_incident_archive"] = [
+        {"timestamp": "2026-05-29 21:30:00", "target": "System Bootstrap Node", "type": "SYSTEM INIT", "status": "CLEARED"}
+    ]
 
 # Render Branding Headers
 st.markdown('<div class="neon-title">📟 JINAT OS : CORE TERMINAL</div>', unsafe_allow_html=True)
 st.markdown('<div class="neon-subtext">SYSTEM DESIGN UNLOCKED // ARCHITECT: JINAT</div>', unsafe_allow_html=True)
 st.markdown("---")
 
+HABITS = [
+    "Study (3-4 Hours)", "Workout", "No PMO", "Asset Building (Pins)",
+    "Hydration", "Social Momentum", "No Junk", "Reading 10 Pages", "Day/Night Skincare"
+]
+
+# --- SIDEBAR CONTROL PANEL ---
+st.sidebar.subheader("🕹️ CONTROL PANEL")
+st.sidebar.markdown(f"""
+    <div style="border: 1px solid #39ff14; padding: 10px; border-radius: 5px; background-color: #0b131a; margin-bottom: 15px; box-shadow: 0 0 8px rgba(57, 255, 20, 0.2); text-align: center;">
+        <span style="color: #39ff14; font-weight: bold; font-family: monospace;">🛰️ LIVE TELEMETRY LOGS:</span><br>
+        <span style="color: #ffffff; font-family: monospace; font-size: 0.9rem;">├─ Current Users: <b>{telemetry['total_connections']}</b> Active</span>
+    </div>
+""", unsafe_allow_html=True)
+
 module = st.sidebar.radio("CHOOSE SYSTEM MODULE:", [
     "🌐 System Mainframe",
-    "🔦 Hardware Pulse Override"
+    "🛡️ Jarvis Virtual Defense Grid",
+    "🤖 Jarvis AI Assistant",
+    "🚨 Habit Tracker Grid",
+    "🛸 Jarvis 3D Design Lab",
+    "Diagnostics", 
+    "Content Matrix", 
+    "F1 Motorsport Vault", 
+    "Risk Parameters", 
+    "Supercar Telemetry"
 ])
 
-if module == "🌐 System Mainframe":
-    st.write("Welcome to the main terminal workspace. Use the sidebar menu to launch the hardware testing suite.")
-
-elif module == "🔦 Hardware Pulse Override":
-    st.subheader("📡 HARDWARE APERTURE TELEMETRY")
-    st.write("This module utilizes the HTML5 Media Capture interface to send manual override pulses to the device's physical flashlight.")
-    st.info("💡 Note: Open this module on a phone, tap the button below, and allow camera access to toggle the hardware lighting array.")
-    
-    # Embedded HTML5 Canvas with Native Hardware Torch JavaScript Engine
-    hardware_js_component = """
-    <div style="background-color: #121622; border: 1px solid #00f3ff; border-radius: 8px; padding: 20px; text-align: center; font-family: monospace;">
-        <h4 style="color: #00f3ff; margin-top: 0;">⚡ HARDWARE OVERRIDE TRIGGER</h4>
-        <p style="color: #8899a6; font-size: 0.85rem;">Status: Waiting for initialization signal...</p>
+st.sidebar.markdown("<br><br><br><br><br>", unsafe_allow_html=True)
+st.sidebar.markdown("""
+    <div style="border: 1px solid #00f3ff; padding: 12px; border-radius: 6px; background-color: #0a0d1a; box-shadow: 0 0 10px rgba(0, 243, 255, 0.3); font-family: 'Courier New', monospace;">
+        <div style="color: #00f3ff; font-weight: bold; font-size: 0.85rem; border-bottom: 1px solid rgba(0, 243, 255, 0.3); padding-bottom: 4px; margin-bottom: 6px; text-align: center;">
+            ⚙️ CORE ARCHITECT INFO
+        </div>
         
-        <button id="torchBtn" style="background-color: #05070a; color: #39ff14; border: 1px solid #39ff14; padding: 12px 24px; font-weight: bold; font-family: monospace; border-radius: 4px; cursor: pointer; box-shadow: 0 0 10px rgba(57, 255, 20, 0.2);">
-            TRIGGER PHYSICAL TORCH PULSE
-        </button>
-        
-        <p id="errLog" style="color: #ff0055; font-size: 0.8rem; margin-top: 10px;"></p>
-    </div>
-
-    <script>
-        let streamTrack = null;
-        let isLightOn = false;
-        const btn = document.getElementById('torchBtn');
-        const errLog = document.getElementById('errLog');
-
-        btn.addEventListener('click', async () => {
-            try {
-                if (!streamTrack) {
-                    const constraints = { video: { facingMode: 'environment' } };
-                    const stream = await navigator.mediaDevices.getUserMedia(constraints);
-                    streamTrack = stream.getVideoTracks()[0];
-                }
-
-                if (streamTrack && 'applyConstraints' in streamTrack) {
-                    isLightOn = !isLightOn;
-                    await streamTrack.applyConstraints({
-                        advanced: [{ torch: isLightOn }]
-                    });
-                    
-                    btn.textContent = isLightOn ? "TERMINATE TORCH PULSE" : "TRIGGER PHYSICAL TORCH PULSE";
-                    btn.style.color = isLightOn ? "#ff0055" : "#39ff14";
-                    btn.style.borderColor = isLightOn ? "#ff0055" : "#39ff14";
-                } else {
-                    errLog.textContent = "Error: Torch control constraint not supported on this browser version.";
-                }
-            } catch (err) {
-                errLog.textContent = "Hardware Link Interrupted: Ensure permission is allowed.";
-                console.error(err);
-            }
-        });
-    </script>
-    """
-    
-    components.html(hardware_js_component, height=200)
-    
