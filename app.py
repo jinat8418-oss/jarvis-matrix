@@ -32,28 +32,35 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 st.markdown('<div class="hud-header">👁️ JARVIS SPATIAL SEARCH GRID</div>', unsafe_allow_html=True)
-st.markdown('<div class="hud-sub">REAL-TIME OBJECT DETECTION & TELEMETRY SEARCH</div>', unsafe_allow_html=True)
+st.markdown('<div class="hud-sub">REAL-TIME AI OBJECT DETECTION & TELEMETRY SEARCH</div>', unsafe_allow_html=True)
 
-# --- REAL-TIME CAMERA + CANVAS ANALYSIS ENGINE ---
+# --- REAL-TIME AI CAMERA ENGINE WITH COCO-SSD ---
 spatial_vision_html = """
+<!-- TensorFlow.js & COCO-SSD Model CDN -->
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd"></script>
+
 <div style="position: relative; width: 100%; max-width: 480px; margin: 0 auto; background: #0b0f19; border: 1px solid #00f3ff; border-radius: 10px; padding: 10px; box-shadow: 0 0 15px rgba(0,243,255,0.2); font-family: monospace;">
     
     <!-- Status Bar -->
     <div style="display: flex; justify-content: space-between; color: #39ff14; font-size: 0.75rem; margin-bottom: 8px;">
-        <span>SYS: ONLINE</span>
-        <span id="targetStatus">STATUS: SEARCHING FOR TARGET</span>
+        <span id="aiStatus">AI: LOADING MODEL...</span>
+        <span id="targetStatus">STATUS: OFF</span>
     </div>
 
     <!-- Viewport Container -->
-    <div style="position: relative; width: 100%; height: 320px; overflow: hidden; border-radius: 6px; border: 1px solid rgba(0,243,255,0.3);">
-        <video id="webcam" autoplay playsinline muted style="width: 100%; height: 100%; object-fit: cover;"></video>
-        <canvas id="arCanvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none;"></canvas>
+    <div id="viewport" style="position: relative; width: 100%; height: 320px; overflow: hidden; border-radius: 6px; border: 1px solid rgba(0,243,255,0.3); touch-action: none;">
+        <video id="webcam" autoplay playsinline muted style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease;"></video>
+        <canvas id="arCanvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></canvas>
     </div>
 
     <!-- Controls -->
-    <div style="margin-top: 12px; text-align: center;">
-        <button id="startCamBtn" style="background: #05070a; color: #00f3ff; border: 1px solid #00f3ff; padding: 10px 20px; font-weight: bold; font-family: monospace; border-radius: 5px; cursor: pointer; box-shadow: 0 0 8px rgba(0,243,255,0.3);">
-            INITIALIZE OPTICAL SCANNER
+    <div style="margin-top: 12px; display: flex; gap: 8px; justify-content: center;">
+        <button id="startCamBtn" style="background: #05070a; color: #00f3ff; border: 1px solid #00f3ff; padding: 10px 16px; font-weight: bold; font-family: monospace; border-radius: 5px; cursor: pointer;">
+            START SCANNER
+        </button>
+        <button id="resetScanBtn" style="background: #05070a; color: #39ff14; border: 1px solid #39ff14; padding: 10px 16px; font-weight: bold; font-family: monospace; border-radius: 5px; cursor: pointer; display: none;">
+            ⚡ SCAN NEW TARGET
         </button>
     </div>
 </div>
@@ -63,139 +70,143 @@ spatial_vision_html = """
     const canvas = document.getElementById('arCanvas');
     const ctx = canvas.getContext('2d');
     const startBtn = document.getElementById('startCamBtn');
+    const resetBtn = document.getElementById('resetScanBtn');
+    const aiStatus = document.getElementById('aiStatus');
     const statusText = document.getElementById('targetStatus');
+    const viewport = document.getElementById('viewport');
 
+    let model = null;
     let isScanning = false;
-    let scanProgress = 0;
-    let targetFound = false;
-    let zoomLevel = 1.0;
+    let lockedDetection = null;
 
-    // Adjust canvas dimensions internal resolution
-    function syncCanvasSize() {
-        canvas.width = video.clientWidth || 340;
-        canvas.height = video.clientHeight || 320;
+    // Load Real TensorFlow AI Model
+    cocoSsd.load().then(loadedModel => {
+        model = loadedModel;
+        aiStatus.textContent = "AI: ONLINE (COCO-SSD)";
+        aiStatus.style.color = "#00f3ff";
+    });
+
+    function syncCanvas() {
+        canvas.width = viewport.clientWidth;
+        canvas.height = viewport.clientHeight;
     }
 
     startBtn.addEventListener('click', async () => {
         try {
-            const stream = await navigator.mediaDevices.getUserMedia({
-                video: { facingMode: 'environment' }
-            });
+            const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
             video.srcObject = stream;
             video.onloadedmetadata = () => {
-                syncCanvasSize();
+                syncCanvas();
                 isScanning = true;
                 startBtn.style.display = 'none';
-                statusText.textContent = "STATUS: LOCKING TARGET...";
-                requestAnimationFrame(renderARLoop);
+                resetBtn.style.display = 'inline-block';
+                statusText.textContent = "STATUS: SCANNING...";
+                detectObjects();
             };
         } catch (err) {
-            alert("Camera Access Required: Please allow camera permissions to initialize optical scanner.");
+            alert("Camera access denied or unavailable.");
         }
     });
 
-    // Simulated Knowledge Base for Search Telemetry
-    const mockDb = [
-        { name: "HIGH-PERFORMANCE CORE", category: "ELECTRONICS / HARDWARE", confidence: "98.4%", query: "Indexing Architecture Metrics..." },
-        { name: "OPTICAL SENSOR ASSEMBLY", category: "HARDWARE / CAMERA", confidence: "96.1%", query: "Searching Global Telemetry..." },
-        { name: "SMART AGENT INTERFACE", category: "AI / EMBEDDED SYSTEM", confidence: "99.2%", query: "Retrieving Web Search Logs..." }
-    ];
-    
-    let activeData = mockDb[0];
+    resetBtn.addEventListener('click', () => {
+        lockedDetection = null;
+        video.style.transform = "scale(1)";
+        statusText.textContent = "STATUS: SCANNING...";
+        statusText.style.color = "#39ff14";
+    });
 
-    function renderARLoop() {
+    // Touch interaction to manual override target
+    canvas.addEventListener('pointerdown', (e) => {
+        const rect = canvas.getBoundingClientRect();
+        const touchX = e.clientX - rect.left;
+        const touchY = e.clientY - rect.top;
+        
+        lockedDetection = {
+            bbox: [touchX - 50, touchY - 50, 100, 100],
+            class: "MANUAL SELECTION",
+            score: 0.99
+        };
+        triggerZoomAndSearch(touchX, touchY);
+    });
+
+    async function detectObjects() {
         if (!isScanning) return;
+
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        const cx = canvas.width / 2;
-        const cy = canvas.height / 2;
-        const boxWidth = 140 * zoomLevel;
-        const boxHeight = 140 * zoomLevel;
-        const x = cx - (boxWidth / 2);
-        const y = cy - (boxHeight / 2);
-
-        // Dynamic targeting effect (Pulse / Zoom)
-        if (scanProgress < 100) {
-            scanProgress += 0.8;
-            if (scanProgress > 50 && zoomLevel < 1.15) {
-                zoomLevel += 0.003; // Smooth digital auto-zoom feel
+        if (model && !lockedDetection) {
+            const predictions = await model.detect(video);
+            if (predictions.length > 0) {
+                // Pick highest confidence target
+                const best = predictions[0];
+                if (best.score > 0.5) {
+                    lockedDetection = best;
+                    const [bx, by, bw, bh] = best.bbox;
+                    triggerZoomAndSearch(bx + bw / 2, by + bh / 2);
+                }
             }
-        } else {
-            targetFound = true;
-            statusText.textContent = "STATUS: TARGET LOCKED";
-            statusText.style.color = "#00f3ff";
         }
 
-        // 1. Draw Bounding Stroke Outline
-        ctx.strokeStyle = targetFound ? "#39ff14" : "#00f3ff";
-        ctx.lineWidth = 2;
-        ctx.shadowBlur = 10;
-        ctx.shadowColor = targetFound ? "#39ff14" : "#00f3ff";
-
-        // Draw Corner Reticles
-        const cornerLen = 18;
-        // Top-Left
-        ctx.beginPath(); ctx.moveTo(x, y + cornerLen); ctx.lineTo(x, y); ctx.lineTo(x + cornerLen, y); ctx.stroke();
-        // Top-Right
-        ctx.beginPath(); ctx.moveTo(x + boxWidth - cornerLen, y); ctx.lineTo(x + boxWidth, y); ctx.lineTo(x + boxWidth, y + cornerLen); ctx.stroke();
-        // Bottom-Left
-        ctx.beginPath(); ctx.moveTo(x, y + boxHeight - cornerLen); ctx.lineTo(x, y + boxHeight); ctx.lineTo(x + cornerLen, y + boxHeight); ctx.stroke();
-        // Bottom-Right
-        ctx.beginPath(); ctx.moveTo(x + boxWidth - cornerLen, y + boxHeight); ctx.lineTo(x + boxWidth, y + boxHeight); ctx.lineTo(x + boxWidth, y + boxHeight - cornerLen); ctx.stroke();
-
-        // 2. Draw Sci-Fi HUD Search Box (Positioned to the right of target)
-        if (targetFound) {
-            const hudX = x + boxWidth + 12;
-            const hudY = y - 10;
-            const hudW = 150;
-            const hudH = 110;
-
-            // Connector Line from Box to Search Panel
-            ctx.beginPath();
-            ctx.moveTo(x + boxWidth, cy);
-            ctx.lineTo(hudX, cy);
-            ctx.strokeStyle = "#00f3ff";
-            ctx.stroke();
-
-            // Background Panel
-            ctx.fillStyle = "rgba(10, 15, 25, 0.85)";
-            ctx.fillRect(hudX, hudY, hudW, hudH);
-            ctx.strokeRect(hudX, hudY, hudW, hudH);
-
-            // Telemetry Text
-            ctx.shadowBlur = 0;
-            ctx.fillStyle = "#39ff14";
-            ctx.font = "bold 9px monospace";
-            ctx.fillText("🔍 SEARCH RESULTS:", hudX + 8, hudY + 18);
-
-            ctx.fillStyle = "#ffffff";
-            ctx.font = "bold 10px monospace";
-            ctx.fillText(activeData.name, hudX + 8, hudY + 36);
-
-            ctx.fillStyle = "#00f3ff";
-            ctx.font = "8px monospace";
-            ctx.fillText(`CLASS: ${activeData.category}`, hudX + 8, hudY + 54);
-            ctx.fillText(`CONF: ${activeData.confidence}`, hudX + 8, hudY + 68);
-
-            ctx.fillStyle = "#8899a6";
-            ctx.fillText("WEB: Query Complete", hudX + 8, hudY + 88);
-            ctx.fillText("STATUS: Indexing...", hudX + 8, hudY + 98);
-        } else {
-            // Scanning Line Animation
-            const scanLineY = y + ((scanProgress / 100) * boxHeight);
-            ctx.beginPath();
-            ctx.moveTo(x, scanLineY);
-            ctx.lineTo(x + boxWidth, scanLineY);
-            ctx.strokeStyle = "rgba(57, 255, 20, 0.8)";
-            ctx.stroke();
+        if (lockedDetection) {
+            drawLockFrame(lockedDetection);
         }
 
-        requestAnimationFrame(renderARLoop);
+        requestAnimationFrame(detectObjects);
+    }
+
+    function triggerZoomAndSearch(centerX, centerY) {
+        statusText.textContent = "STATUS: TARGET LOCKED";
+        statusText.style.color = "#00f3ff";
+        
+        // Digital Auto-Zoom Effect
+        video.style.transformOrigin = `${centerX}px ${centerY}px`;
+        video.style.transform = "scale(1.25)";
+    }
+
+    function drawLockFrame(det) {
+        // Adjust coordinates relative to current canvas size
+        const scaleX = canvas.width / video.videoWidth || 1;
+        const scaleY = canvas.height / video.videoHeight || 1;
+        
+        const x = det.bbox[0] * scaleX;
+        const y = det.bbox[1] * scaleY;
+        const w = det.bbox[2] * scaleX;
+        const h = det.bbox[3] * scaleY;
+
+        // 1. Draw Green Stroke Outline Around Object
+        ctx.strokeStyle = "#39ff14";
+        ctx.lineWidth = 2.5;
+        ctx.shadowBlur = 8;
+        ctx.shadowColor = "#39ff14";
+        ctx.strokeRect(x, y, w, h);
+
+        // 2. HUD Search Window
+        const hudX = Math.min(x + w + 10, canvas.width - 150);
+        const hudY = Math.max(y, 10);
+        
+        ctx.fillStyle = "rgba(6, 8, 14, 0.9)";
+        ctx.fillRect(hudX, hudY, 140, 75);
+        ctx.strokeStyle = "#00f3ff";
+        ctx.strokeRect(hudX, hudY, 140, 75);
+
+        ctx.shadowBlur = 0;
+        ctx.fillStyle = "#39ff14";
+        ctx.font = "bold 9px monospace";
+        ctx.fillText("🔍 AI IDENTIFIED:", hudX + 6, hudY + 16);
+
+        ctx.fillStyle = "#ffffff";
+        ctx.font = "bold 11px monospace";
+        ctx.fillText(det.class.toUpperCase(), hudX + 6, hudY + 34);
+
+        ctx.fillStyle = "#00f3ff";
+        ctx.font = "8px monospace";
+        ctx.fillText(`CONF: ${(det.score * 100).toFixed(1)}%`, hudX + 6, hudY + 50);
+        ctx.fillText("WEB: Indexing Data...", hudX + 6, hudY + 64);
     }
 </script>
 """
 
-components.html(spatial_vision_html, height=460)
+components.html(spatial_vision_html, height=480)
 
 st.markdown("---")
-st.write("📟 SYSTEM ARCHITECTURE: SPATIAL VISION MATRIX v1.0")
+st.write("📟 SYSTEM ARCHITECTURE: SPATIAL VISION MATRIX v2.0")
