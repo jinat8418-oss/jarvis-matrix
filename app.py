@@ -1,4 +1,3 @@
-
 import streamlit as st
 import streamlit.components.v1 as components
 
@@ -114,7 +113,7 @@ spatial_vision_html = """
     let isScanning = false;
     let lockedDetection = null;
 
-    // Class Color Mapping Engine
+    // Dynamic Class Color Mapping Engine
     function getColorForClass(className) {
         const cls = className.toLowerCase();
         if (cls.includes('book') || cls.includes('paper')) return '#10B981'; // Emerald Green
@@ -188,7 +187,6 @@ spatial_vision_html = """
                     lockedDetection = best;
                     const [bx, by, bw, bh] = best.bbox;
                     
-                    // Remap misclassifications on desktop/paper items
                     if (best.class === 'laptop' && bw < 180) {
                         lockedDetection.class = 'CALCULATOR / DEVICE';
                     }
@@ -209,11 +207,11 @@ spatial_vision_html = """
         statusText.textContent = "STATUS: TARGET LOCKED";
         statusText.style.color = "#10B981";
         
-        // Physical Canvas Zoom directly onto coordinates
-        const originX = (centerX / canvas.width) * 100;
-        const originY = (centerY / canvas.height) * 100;
+        // Gentle Centered Canvas Zoom to avoid pushing edges offscreen
+        const originX = Math.min(Math.max((centerX / canvas.width) * 100, 20), 80);
+        const originY = Math.min(Math.max((centerY / canvas.height) * 100, 20), 80);
         zoomContainer.style.transformOrigin = `${originX}% ${originY}%`;
-        zoomContainer.style.transform = "scale(1.25)";
+        zoomContainer.style.transform = "scale(1.15)";
     }
 
     function drawLockFrame(det) {
@@ -227,7 +225,7 @@ spatial_vision_html = """
 
         const dynamicColor = getColorForClass(det.class);
 
-        // Dynamic Color Bounding Brackets
+        // Bounding Brackets
         const corner = 16;
         ctx.strokeStyle = dynamicColor;
         ctx.lineWidth = 3;
@@ -245,11 +243,23 @@ spatial_vision_html = """
         ctx.moveTo(x + w - corner, y + h); ctx.lineTo(x + w, y + h); ctx.lineTo(x + w, y + h - corner);
         ctx.stroke();
 
-        // HUD Info Panel
-        const hudX = Math.min(x + w + 10, canvas.width - 150);
-        const hudY = Math.max(y, 10);
+        // Screen-Aware Smart Overlay Positioning
         const hudW = 140;
         const hudH = 75;
+        
+        let hudX = x + w + 10;
+        let hudY = y;
+
+        // If HUD exceeds right canvas boundary, flip it inside/left
+        if (hudX + hudW > canvas.width - 10) {
+            hudX = Math.max(10, x - hudW - 10);
+            if (hudX < 10) {
+                hudX = Math.max(10, x + 10); // Overlay inside box if left also fails
+            }
+        }
+
+        // Clamp Y to stay within viewport
+        hudY = Math.min(Math.max(hudY, 10), canvas.height - hudH - 10);
 
         ctx.fillStyle = "rgba(15, 23, 42, 0.92)";
         ctx.fillRect(hudX, hudY, hudW, hudH);
@@ -277,9 +287,3 @@ spatial_vision_html = """
 """
 
 components.html(spatial_vision_html, height=540)
-
-        
-        
-        
-        
-        
