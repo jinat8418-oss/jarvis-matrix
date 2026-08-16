@@ -1,66 +1,99 @@
 import streamlit as st
 import streamlit.components.v1 as components
 
-# --- CORE PAGE CONFIGURATION ---
-st.set_page_config(page_title="JARVIS SPATIAL VISION", page_icon="👁️", layout="centered")
+# --- FULLSCREEN SCI-FI CONFIGURATION ---
+st.set_page_config(page_title="JARVIS OPTICAL HUD", page_icon="🌐", layout="wide")
 
-# --- CYBERPUNK AR INTERFACE STYLING ---
+# --- PREMIUM CINEMATIC UI STYLING ---
 st.markdown("""
     <style>
-    .stApp {
-        background-color: #06080e;
-        color: #00f3ff;
-        font-family: 'Courier New', monospace;
+    /* Remove Default Streamlit Padding */
+    .block-container {
+        padding-top: 1rem !important;
+        padding-bottom: 0rem !important;
+        padding-left: 0.5rem !important;
+        padding-right: 0.5rem !important;
+        max-width: 100% !important;
     }
-    .hud-header {
-        text-align: center;
-        color: #00f3ff;
-        text-shadow: 0 0 12px #00f3ff;
-        font-weight: bold;
-        font-size: 1.8rem;
+    header, footer, #MainMenu {visibility: hidden;}
+    
+    body, .stApp {
+        background-color: #030712 !important;
+        color: #F8FAFC;
+        font-family: 'Consolas', 'Courier New', monospace;
+    }
+
+    /* Sci-Fi Glow Utility Classes */
+    .cyan-glow {
+        color: #00D8FF;
+        text-shadow: 0 0 10px rgba(0, 216, 255, 0.75), 0 0 20px rgba(0, 216, 255, 0.4);
+    }
+    .hud-title-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
         margin-bottom: 2px;
     }
-    .hud-sub {
+    .hud-title {
+        color: #F8FAFC;
+        font-size: 1.4rem;
+        font-weight: 800;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+    }
+    .hud-subtitle {
         text-align: center;
-        color: #39ff14;
-        text-shadow: 0 0 8px rgba(57, 255, 20, 0.5);
-        font-size: 0.8rem;
+        color: #64748B;
+        font-size: 0.7rem;
         letter-spacing: 2px;
-        margin-bottom: 15px;
+        margin-bottom: 12px;
     }
     </style>
 """, unsafe_allow_html=True)
 
-st.markdown('<div class="hud-header">👁️ JARVIS SPATIAL SEARCH GRID</div>', unsafe_allow_html=True)
-st.markdown('<div class="hud-sub">REAL-TIME AI OBJECT DETECTION & TELEMETRY SEARCH</div>', unsafe_allow_html=True)
+# --- HEADER WITH VECTOR OPTIC EYE ---
+st.markdown("""
+    <div class="hud-title-container">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#00D8FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="filter: drop-shadow(0px 0px 6px #00D8FF);">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M3 7V5a2 2 0 0 1 2-2h2"></path>
+            <path d="M17 3h2a2 2 0 0 1 2 2v2"></path>
+            <path d="M21 17v2a2 2 0 0 1-2 2h-2"></path>
+            <path d="M7 21H5a2 2 0 0 1-2-2v-2"></path>
+        </svg>
+        <span class="hud-title">JARVIS <span class="cyan-glow">VISION MATRIX</span></span>
+    </div>
+    <div class="hud-subtitle">SPATIAL QUANTUM SCANNER // REAL-TIME HUD TELEMETRY</div>
+""", unsafe_allow_html=True)
 
-# --- REAL-TIME AI CAMERA ENGINE WITH COCO-SSD ---
+# --- FULL VIEWPORT TENSORFLOW ENGINE ---
 spatial_vision_html = """
 <!-- TensorFlow.js & COCO-SSD Model CDN -->
 <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
 <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd"></script>
 
-<div style="position: relative; width: 100%; max-width: 480px; margin: 0 auto; background: #0b0f19; border: 1px solid #00f3ff; border-radius: 10px; padding: 10px; box-shadow: 0 0 15px rgba(0,243,255,0.2); font-family: monospace;">
+<div style="position: relative; width: 100%; max-width: 600px; margin: 0 auto; background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(0, 216, 255, 0.3); border-radius: 12px; padding: 12px; box-shadow: 0 0 25px rgba(0, 216, 255, 0.15); backdrop-filter: blur(8px);">
     
-    <!-- Status Bar -->
-    <div style="display: flex; justify-content: space-between; color: #39ff14; font-size: 0.75rem; margin-bottom: 8px;">
-        <span id="aiStatus">AI: LOADING MODEL...</span>
-        <span id="targetStatus">STATUS: OFF</span>
+    <!-- Top System Telemetry Bar -->
+    <div style="display: flex; justify-content: space-between; color: #94A3B8; font-size: 0.7rem; letter-spacing: 1px; margin-bottom: 8px; font-weight: bold;">
+        <span id="aiStatus" style="color: #00D8FF;">CORE: LOADING MODEL...</span>
+        <span id="targetStatus" style="color: #64748B;">STATUS: STANDBY</span>
     </div>
 
-    <!-- Viewport Container -->
-    <div id="viewport" style="position: relative; width: 100%; height: 320px; overflow: hidden; border-radius: 6px; border: 1px solid rgba(0,243,255,0.3); touch-action: none;">
-        <video id="webcam" autoplay playsinline muted style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease;"></video>
+    <!-- Full Aspect Viewport -->
+    <div id="viewport" style="position: relative; width: 100%; height: 60vh; max-height: 480px; min-height: 340px; overflow: hidden; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.1); background: #000; touch-action: none;">
+        <video id="webcam" autoplay playsinline muted style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s ease-out;"></video>
         <canvas id="arCanvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></canvas>
     </div>
 
-    <!-- Controls -->
-    <div style="margin-top: 12px; display: flex; gap: 8px; justify-content: center;">
-        <button id="startCamBtn" style="background: #05070a; color: #00f3ff; border: 1px solid #00f3ff; padding: 10px 16px; font-weight: bold; font-family: monospace; border-radius: 5px; cursor: pointer;">
-            START SCANNER
+    <!-- Action Bar -->
+    <div style="margin-top: 12px; display: flex; gap: 10px; justify-content: center;">
+        <button id="startCamBtn" style="background: linear-gradient(135deg, #0072FF 0%, #00D8FF 100%); color: #030712; border: none; padding: 12px 24px; font-weight: 800; font-family: monospace; border-radius: 6px; cursor: pointer; letter-spacing: 1.5px; box-shadow: 0 0 15px rgba(0, 216, 255, 0.4);">
+            INITIALIZE MATRIX SCAN
         </button>
-        <button id="resetScanBtn" style="background: #05070a; color: #39ff14; border: 1px solid #39ff14; padding: 10px 16px; font-weight: bold; font-family: monospace; border-radius: 5px; cursor: pointer; display: none;">
-            ⚡ SCAN NEW TARGET
+        <button id="resetScanBtn" style="background: rgba(15, 23, 42, 0.8); color: #00D8FF; border: 1px solid #00D8FF; padding: 12px 20px; font-weight: 700; font-family: monospace; border-radius: 6px; cursor: pointer; display: none; letter-spacing: 1px; box-shadow: 0 0 10px rgba(0, 216, 255, 0.2);">
+            ⚡ TARGET NEW OBJECT
         </button>
     </div>
 </div>
@@ -79,11 +112,10 @@ spatial_vision_html = """
     let isScanning = false;
     let lockedDetection = null;
 
-    // Load Real TensorFlow AI Model
     cocoSsd.load().then(loadedModel => {
         model = loadedModel;
-        aiStatus.textContent = "AI: ONLINE (COCO-SSD)";
-        aiStatus.style.color = "#00f3ff";
+        aiStatus.textContent = "CORE: NEURAL ENGINE ACTIVE";
+        aiStatus.style.color = "#00D8FF";
     });
 
     function syncCanvas() {
@@ -100,30 +132,30 @@ spatial_vision_html = """
                 isScanning = true;
                 startBtn.style.display = 'none';
                 resetBtn.style.display = 'inline-block';
-                statusText.textContent = "STATUS: SCANNING...";
+                statusText.textContent = "STATUS: SEARCHING...";
+                statusText.style.color = "#00D8FF";
                 detectObjects();
             };
         } catch (err) {
-            alert("Camera access denied or unavailable.");
+            alert("Camera Access Denied: Enable camera permissions to project HUD.");
         }
     });
 
     resetBtn.addEventListener('click', () => {
         lockedDetection = null;
         video.style.transform = "scale(1)";
-        statusText.textContent = "STATUS: SCANNING...";
-        statusText.style.color = "#39ff14";
+        statusText.textContent = "STATUS: SEARCHING...";
+        statusText.style.color = "#00D8FF";
     });
 
-    // Touch interaction to manual override target
     canvas.addEventListener('pointerdown', (e) => {
         const rect = canvas.getBoundingClientRect();
         const touchX = e.clientX - rect.left;
         const touchY = e.clientY - rect.top;
         
         lockedDetection = {
-            bbox: [touchX - 50, touchY - 50, 100, 100],
-            class: "MANUAL SELECTION",
+            bbox: [touchX - 60, touchY - 60, 120, 120],
+            class: "MANUAL TARGET",
             score: 0.99
         };
         triggerZoomAndSearch(touchX, touchY);
@@ -131,15 +163,13 @@ spatial_vision_html = """
 
     async function detectObjects() {
         if (!isScanning) return;
-
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
         if (model && !lockedDetection) {
             const predictions = await model.detect(video);
             if (predictions.length > 0) {
-                // Pick highest confidence target
                 const best = predictions[0];
-                if (best.score > 0.5) {
+                if (best.score > 0.45) {
                     lockedDetection = best;
                     const [bx, by, bw, bh] = best.bbox;
                     triggerZoomAndSearch(bx + bw / 2, by + bh / 2);
@@ -155,16 +185,14 @@ spatial_vision_html = """
     }
 
     function triggerZoomAndSearch(centerX, centerY) {
-        statusText.textContent = "STATUS: TARGET LOCKED";
-        statusText.style.color = "#00f3ff";
+        statusText.textContent = "STATUS: LOCK ENGAGED";
+        statusText.style.color = "#38BDF8";
         
-        // Digital Auto-Zoom Effect
         video.style.transformOrigin = `${centerX}px ${centerY}px`;
-        video.style.transform = "scale(1.25)";
+        video.style.transform = "scale(1.2)";
     }
 
     function drawLockFrame(det) {
-        // Adjust coordinates relative to current canvas size
         const scaleX = canvas.width / video.videoWidth || 1;
         const scaleY = canvas.height / video.videoHeight || 1;
         
@@ -173,40 +201,72 @@ spatial_vision_html = """
         const w = det.bbox[2] * scaleX;
         const h = det.bbox[3] * scaleY;
 
-        // 1. Draw Green Stroke Outline Around Object
-        ctx.strokeStyle = "#39ff14";
-        ctx.lineWidth = 2.5;
-        ctx.shadowBlur = 8;
-        ctx.shadowColor = "#39ff14";
-        ctx.strokeRect(x, y, w, h);
+        // 1. Futuristic Bounding Stroke Corner Reticles
+        const corner = 18;
+        ctx.strokeStyle = "#00D8FF";
+        ctx.lineWidth = 3;
+        ctx.shadowBlur = 12;
+        ctx.shadowColor = "#00D8FF";
 
-        // 2. HUD Search Window
-        const hudX = Math.min(x + w + 10, canvas.width - 150);
+        // Draw HUD Bracket Corners
+        ctx.beginPath();
+        // Top Left
+        ctx.moveTo(x, y + corner); ctx.lineTo(x, y); ctx.lineTo(x + corner, y);
+        // Top Right
+        ctx.moveTo(x + w - corner, y); ctx.lineTo(x + w, y); ctx.lineTo(x + w, y + corner);
+        // Bottom Left
+        ctx.moveTo(x, y + h - corner); ctx.lineTo(x, y + h); ctx.lineTo(x + corner, y + h);
+        // Bottom Right
+        ctx.moveTo(x + w - corner, y + h); ctx.lineTo(x + w, y + h); ctx.lineTo(x + w, y + h - corner);
+        ctx.stroke();
+
+        // Crosshairs in Center
+        const cx = x + w/2;
+        const cy = y + h/2;
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(cx - 8, cy); ctx.lineTo(cx + 8, cy);
+        ctx.moveTo(cx, cy - 8); ctx.lineTo(cx, cy + 8);
+        ctx.stroke();
+
+        // 2. Futuristic Arc HUD Telemetry Box
+        const hudX = Math.min(x + w + 12, canvas.width - 160);
         const hudY = Math.max(y, 10);
-        
-        ctx.fillStyle = "rgba(6, 8, 14, 0.9)";
-        ctx.fillRect(hudX, hudY, 140, 75);
-        ctx.strokeStyle = "#00f3ff";
-        ctx.strokeRect(hudX, hudY, 140, 75);
+        const hudW = 150;
+        const hudH = 80;
 
+        // Connector Line
+        ctx.beginPath();
+        ctx.moveTo(x + w, cy);
+        ctx.lineTo(hudX, cy);
+        ctx.strokeStyle = "rgba(0, 216, 255, 0.6)";
+        ctx.stroke();
+
+        // Glassmorphism HUD Panel Background
+        ctx.fillStyle = "rgba(3, 7, 18, 0.88)";
+        ctx.fillRect(hudX, hudY, hudW, hudH);
+        ctx.strokeStyle = "#00D8FF";
+        ctx.lineWidth = 1;
+        ctx.strokeRect(hudX, hudY, hudW, hudH);
+
+        // Telemetry Data Text
         ctx.shadowBlur = 0;
-        ctx.fillStyle = "#39ff14";
-        ctx.font = "bold 9px monospace";
-        ctx.fillText("🔍 AI IDENTIFIED:", hudX + 6, hudY + 16);
+        ctx.fillStyle = "#94A3B8";
+        ctx.font = "bold 9px 'Consolas', monospace";
+        ctx.fillText("TARGET IDENTIFIED:", hudX + 8, hudY + 18);
 
-        ctx.fillStyle = "#ffffff";
-        ctx.font = "bold 11px monospace";
-        ctx.fillText(det.class.toUpperCase(), hudX + 6, hudY + 34);
+        ctx.fillStyle = "#F8FAFC";
+        ctx.font = "bold 12px 'Consolas', monospace";
+        ctx.fillText(det.class.toUpperCase(), hudX + 8, hudY + 36);
 
-        ctx.fillStyle = "#00f3ff";
-        ctx.font = "8px monospace";
-        ctx.fillText(`CONF: ${(det.score * 100).toFixed(1)}%`, hudX + 6, hudY + 50);
-        ctx.fillText("WEB: Indexing Data...", hudX + 6, hudY + 64);
+        ctx.fillStyle = "#00D8FF";
+        ctx.font = "9px 'Consolas', monospace";
+        ctx.fillText(`ACCURACY: ${(det.score * 100).toFixed(1)}%`, hudX + 8, hudY + 52);
+        
+        ctx.fillStyle = "#38BDF8";
+        ctx.fillText("NET: Indexing Logs...", hudX + 8, hudY + 68);
     }
 </script>
 """
 
-components.html(spatial_vision_html, height=480)
-
-st.markdown("---")
-st.write("📟 SYSTEM ARCHITECTURE: SPATIAL VISION MATRIX v2.0")
+components.html(spatial_vision_html, height=560)
