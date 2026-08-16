@@ -1,256 +1,201 @@
 import streamlit as st
-import random
-import json
-import numpy as np
-import plotly.graph_objects as go
-from datetime import datetime
-import time
+import streamlit.components.v1 as components
 
-# Core Configuration
-st.set_page_config(page_title="JINAT OS", page_icon="📟", layout="centered")
+# --- CORE PAGE CONFIGURATION ---
+st.set_page_config(page_title="JARVIS SPATIAL VISION", page_icon="👁️", layout="centered")
 
-# --- CYBERPUNK NEON GLOW STYLE ENGINE ---
+# --- CYBERPUNK AR INTERFACE STYLING ---
 st.markdown("""
     <style>
     .stApp {
-        background-color: #0d0e15;
-        color: #e0e6ed;
-    }
-    .neon-title {
-        font-family: 'Courier New', monospace;
+        background-color: #06080e;
         color: #00f3ff;
-        text-shadow: 0 0 10px #00f3ff, 0 0 20px #00f3ff;
-        font-weight: bold;
-        font-size: 2.2rem;
-        margin-bottom: 5px;
-    }
-    .neon-subtext {
-        color: #39ff14;
         font-family: 'Courier New', monospace;
-        text-shadow: 0 0 8px rgba(57, 255, 20, 0.6);
-        font-size: 0.9rem;
+    }
+    .hud-header {
+        text-align: center;
+        color: #00f3ff;
+        text-shadow: 0 0 12px #00f3ff;
+        font-weight: bold;
+        font-size: 1.8rem;
+        margin-bottom: 2px;
+    }
+    .hud-sub {
+        text-align: center;
+        color: #39ff14;
+        text-shadow: 0 0 8px rgba(57, 255, 20, 0.5);
+        font-size: 0.8rem;
         letter-spacing: 2px;
-    }
-    .neon-box {
-        border: 1px solid #00f3ff;
-        border-radius: 8px;
-        padding: 15px;
-        background-color: #121622;
-        box-shadow: 0 0 10px rgba(0, 243, 255, 0.25);
         margin-bottom: 15px;
-    }
-    section[data-testid="stSidebar"] {
-        background-color: #070913 !important;
-        border-right: 1px solid #39ff14;
-        box-shadow: 2px 0px 10px rgba(57, 255, 20, 0.15);
     }
     </style>
 """, unsafe_allow_html=True)
 
-# --- GLOBAL TELEMETRY ENGINE ---
-@st.cache_resource
-def initialize_global_telemetry():
-    return {"total_connections": 12}
+st.markdown('<div class="hud-header">👁️ JARVIS SPATIAL SEARCH GRID</div>', unsafe_allow_html=True)
+st.markdown('<div class="hud-sub">REAL-TIME OBJECT DETECTION & TELEMETRY SEARCH</div>', unsafe_allow_html=True)
 
-telemetry = initialize_global_telemetry()
-
-# --- PERSISTENT SYSTEMS LOG ARCHIVE ENGINE ---
-if "tracker_vault" not in st.session_state:
-    st.session_state["tracker_vault"] = {}
-
-if "global_incident_archive" not in st.session_state:
-    st.session_state["global_incident_archive"] = [
-        {"timestamp": "2026-05-29 21:30:00", "target": "System Bootstrap Node", "type": "SYSTEM INIT", "status": "CLEARED"}
-    ]
-
-# Render Branding Headers
-st.markdown('<div class="neon-title">📟 JINAT OS : CORE TERMINAL</div>', unsafe_allow_html=True)
-st.markdown('<div class="neon-subtext">SYSTEM DESIGN UNLOCKED // ARCHITECT: JINAT</div>', unsafe_allow_html=True)
-st.markdown("---")
-
-HABITS = [
-    "Study (3-4 Hours)", "Workout", "No PMO", "Asset Building (Pins)",
-    "Hydration", "Social Momentum", "No Junk", "Reading 10 Pages", "Day/Night Skincare"
-]
-
-# --- SIDEBAR CONTROL PANEL ---
-st.sidebar.subheader("🕹️ CONTROL PANEL")
-st.sidebar.markdown(f"""
-    <div style="border: 1px solid #39ff14; padding: 10px; border-radius: 5px; background-color: #0b131a; margin-bottom: 15px; box-shadow: 0 0 8px rgba(57, 255, 20, 0.2); text-align: center;">
-        <span style="color: #39ff14; font-weight: bold; font-family: monospace;">🛰️ LIVE TELEMETRY LOGS:</span><br>
-        <span style="color: #ffffff; font-family: monospace; font-size: 0.9rem;">├─ Current Users: <b>{telemetry['total_connections']}</b> Active</span>
+# --- REAL-TIME CAMERA + CANVAS ANALYSIS ENGINE ---
+spatial_vision_html = """
+<div style="position: relative; width: 100%; max-width: 480px; margin: 0 auto; background: #0b0f19; border: 1px solid #00f3ff; border-radius: 10px; padding: 10px; box-shadow: 0 0 15px rgba(0,243,255,0.2); font-family: monospace;">
+    
+    <!-- Status Bar -->
+    <div style="display: flex; justify-content: space-between; color: #39ff14; font-size: 0.75rem; margin-bottom: 8px;">
+        <span>SYS: ONLINE</span>
+        <span id="targetStatus">STATUS: SEARCHING FOR TARGET</span>
     </div>
-""", unsafe_allow_html=True)
 
-module = st.sidebar.radio("CHOOSE SYSTEM MODULE:", [
-    "🌐 System Mainframe",
-    "🛡️ Jarvis Virtual Defense Grid",
-    "🤖 Jarvis AI Assistant",
-    "🚨 Habit Tracker Grid",
-    "🛸 Jarvis 3D Design Lab",
-    "Diagnostics", 
-    "Content Matrix", 
-    "F1 Motorsport Vault", 
-    "Risk Parameters", 
-    "Supercar Telemetry"
-])
-
-st.sidebar.markdown("<br><br><br><br><br>", unsafe_allow_html=True)
-st.sidebar.markdown("""
-    <div style="border: 1px solid #00f3ff; padding: 12px; border-radius: 6px; background-color: #0a0d1a; box-shadow: 0 0 10px rgba(0, 243, 255, 0.3); font-family: 'Courier New', monospace;">
-        <div style="color: #00f3ff; font-weight: bold; font-size: 0.85rem; border-bottom: 1px solid rgba(0, 243, 255, 0.3); padding-bottom: 4px; margin-bottom: 6px; text-align: center;">
-            ⚙️ CORE ARCHITECT INFO
-        </div>
-        <span style="color: #8899a6; font-size: 0.75rem;">DEVELOPER:</span><br>
-        <span style="color: #ffffff; font-weight: bold; font-size: 0.85rem;">⚡ JINAT</span><br>
-        <span style="color: #8899a6; font-size: 0.75rem; margin-top: 4px; display: inline-block;">AI SUBSYSTEM:</span><br>
-        <span style="color: #ffffff; font-weight: bold; font-size: 0.85rem;">🤖 JARVIS MATRIX v2.1</span><br>
-        <span style="color: #8899a6; font-size: 0.75rem; margin-top: 4px; display: inline-block;">INITIAL LAUNCH:</span><br>
-        <span style="color: #39ff14; font-weight: bold; font-size: 0.8rem;">📅 MAY 2026</span><br>
+    <!-- Viewport Container -->
+    <div style="position: relative; width: 100%; height: 320px; overflow: hidden; border-radius: 6px; border: 1px solid rgba(0,243,255,0.3);">
+        <video id="webcam" autoplay playsinline muted style="width: 100%; height: 100%; object-fit: cover;"></video>
+        <canvas id="arCanvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none;"></canvas>
     </div>
-""", unsafe_allow_html=True)
 
-# --- MODULE CORRIDORS ---
-if module == "🌐 System Mainframe":
-    st.write("Welcome to the mainframe terminal workspace. Adjust structural vectors below to modify the active blueprint profile.")
-    col1, col2, col3 = st.columns(3)
-    with col1: roof_height = st.slider("Chassis Roof Cap:", 0.8, 1.5, 1.15, step=0.05)
-    with col2: ground_clearance = st.slider("Stance Splitter Drop:", 0.02, 0.25, 0.10, step=0.02)
-    with col3: spoiler_kick = st.slider("Rear Spoiler Extension:", 0.90, 1.25, 1.05, step=0.05)
-    car_x = [0.0, 1.2, 1.6, 2.3, 2.7, 4.2, 5.0, 5.5, 6.7, 7.3, 7.8, 8.0, 7.7, 7.3, 6.9, 6.9, 6.4, 5.5, 2.4, 1.9, 1.4, 1.4, 0.9, 0.0]
-    car_y = [ground_clearance, ground_clearance + 0.05, 0.45, 0.5, 0.95, roof_height, roof_height - 0.03, roof_height - 0.1, 0.98, 0.98, spoiler_kick, 0.4, ground_clearance, ground_clearance, 0.35, 0.35, ground_clearance, ground_clearance, ground_clearance, ground_clearance, 0.35, 0.35, ground_clearance, ground_clearance]
-    fig_car = go.Figure()
-    fig_car.add_trace(go.Scatter(x=car_x, y=car_y, mode='lines+markers', line=dict(color='#00f3ff', width=2.5)))
-    fig_car.update_layout(xaxis=dict(visible=False), yaxis=dict(visible=False), paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', height=240, margin=dict(l=10, r=10, b=10, t=10))
-    st.plotly_chart(fig_car, use_container_width=True)
+    <!-- Controls -->
+    <div style="margin-top: 12px; text-align: center;">
+        <button id="startCamBtn" style="background: #05070a; color: #00f3ff; border: 1px solid #00f3ff; padding: 10px 20px; font-weight: bold; font-family: monospace; border-radius: 5px; cursor: pointer; box-shadow: 0 0 8px rgba(0,243,255,0.3);">
+            INITIALIZE OPTICAL SCANNER
+        </button>
+    </div>
+</div>
 
-elif module == "🛡️ Jarvis Virtual Defense Grid":
-    st.subheader("[+] AUTOMATED AI COUNTERMEASURE SYSTEM")
-    st.write("This node models real-time intercept actions against network security threats targeting infrastructure networks.")
+<script>
+    const video = document.getElementById('webcam');
+    const canvas = document.getElementById('arCanvas');
+    const ctx = canvas.getContext('2d');
+    const startBtn = document.getElementById('startCamBtn');
+    const statusText = document.getElementById('targetStatus');
+
+    let isScanning = false;
+    let scanProgress = 0;
+    let targetFound = false;
+    let zoomLevel = 1.0;
+
+    // Adjust canvas dimensions internal resolution
+    function syncCanvasSize() {
+        canvas.width = video.clientWidth || 340;
+        canvas.height = video.clientHeight || 320;
+    }
+
+    startBtn.addEventListener('click', async () => {
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({
+                video: { facingMode: 'environment' }
+            });
+            video.srcObject = stream;
+            video.onloadedmetadata = () => {
+                syncCanvasSize();
+                isScanning = true;
+                startBtn.style.display = 'none';
+                statusText.textContent = "STATUS: LOCKING TARGET...";
+                requestAnimationFrame(renderARLoop);
+            };
+        } catch (err) {
+            alert("Camera Access Required: Please allow camera permissions to initialize optical scanner.");
+        }
+    });
+
+    // Simulated Knowledge Base for Search Telemetry
+    const mockDb = [
+        { name: "HIGH-PERFORMANCE CORE", category: "ELECTRONICS / HARDWARE", confidence: "98.4%", query: "Indexing Architecture Metrics..." },
+        { name: "OPTICAL SENSOR ASSEMBLY", category: "HARDWARE / CAMERA", confidence: "96.1%", query: "Searching Global Telemetry..." },
+        { name: "SMART AGENT INTERFACE", category: "AI / EMBEDDED SYSTEM", confidence: "99.2%", query: "Retrieving Web Search Logs..." }
+    ];
     
-    target_enterprise = st.selectbox("Select Target Infrastructure Nodes:", [
-        "Mobile User Device Node (Social Media API Firewall Shield)",
-        "Rockstar Games Alpha Server (Grand Theft Auto VI Source File Grid)",
-        "Sovereign Government Central Communication Database"
-    ])
-    
-    if st.button("EXECUTE LIVE SIMULATED BREACH INTERCEPT"):
-        st.warning("⚠️ ALERT: UNRECOGNIZED IP ATTEMPTING MALICIOUS BURST DATA EXFILTRATION...")
-        
-        progress_bar = st.progress(0)
-        status_text = st.empty()
-        
-        status_text.text("🤖 Jarvis Parsing Request: Analyzing incoming packets...")
-        time.sleep(0.6)
-        progress_bar.progress(30)
-        status_text.text("👾 Tracking Anomaly: Exploit vector identified on communication layer.")
-        time.sleep(0.6)
-        progress_bar.progress(65)
-        status_text.text("⚡ Activating Shield Protocol: Isolation routine running...")
-        time.sleep(0.6)
-        progress_bar.progress(100)
-        
-        current_time_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        st.success(f"✔️ COUNTERMEASURE SUCCESSFUL: Threat neutralized on target node.")
-        
-        st.session_state["global_incident_archive"].append({
-            "timestamp": current_time_str,
-            "target": target_enterprise.split(" (")[0],
-            "type": "MALICIOUS INTRUSION METRIC DETECTED",
-            "status": "QUARANTINED"
-        })
-        
-        time_axis = list(range(10))
-        attack_intensity = [random.randint(40, 95) for _ in range(7)] + [20, 5, 0]
-        fig_defense = go.Figure()
-        fig_defense.add_trace(go.Scatter(x=time_axis, y=attack_intensity, mode='lines+markers', name='Threat Load', line=dict(color='#ff0055', width=3)))
-        fig_defense.update_layout(xaxis=dict(gridcolor="#221111"), yaxis=dict(gridcolor="#221111"), paper_bgcolor='#0b0d14', plot_bgcolor='#0b0d14', height=240, margin=dict(l=10, r=10, b=10, t=10))
-        st.plotly_chart(fig_defense, use_container_width=True)
+    let activeData = mockDb[0];
 
-    st.markdown("---")
-    st.markdown("### 🗃️ CHRONOLOGICAL SYSTEM THREAT LOG ARCHIVE")
-    for incident in reversed(st.session_state["global_incident_archive"]):
-        st.markdown(f"""
-            <div style="border-left: 3px solid #39ff14; background-color: #111424; padding: 10px; margin-bottom: 8px; font-family: monospace; border-radius: 4px;">
-                <span style="color: #8899a6; font-size: 0.8rem;">[{incident['timestamp']}]</span><br>
-                <span style="color: #00f3ff;">TARGET:</span> {incident['target']} | <span style="color: #ff0055;">TYPE:</span> {incident['type']}<br>
-                <span style="color: #39ff14; font-weight: bold;">STATUS: 🛡️ {incident['status']}</span>
-            </div>
-        """, unsafe_allow_html=True)
+    function renderARLoop() {
+        if (!isScanning) return;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-elif module == "🤖 Jarvis AI Assistant":
-    st.subheader("[+] DYNAMIC JARVIS ALGORITHMIC CONSOLE")
-    if "chat_history" not in st.session_state:
-        st.session_state["chat_history"] = [{"role": "jarvis", "text": "Jarvis matrix synchronized. Text lanes open, sir."}]
-    
-    for message in st.session_state["chat_history"]:
-        if message["role"] == "user":
-            st.markdown(f"""<div style='text-align: right; background-color: #1a1f33; padding: 10px; border-radius: 10px; margin-bottom: 10px; border-right: 3px solid #00f3ff; display: inline-block; float: right; clear: both; max-width: 80%; font-family: monospace;'><b>You:</b> {message['text']}</div>""", unsafe_allow_html=True)
-        else:
-            st.markdown(f"""<div style='text-align: left; background-color: #0b131a; padding: 10px; border-radius: 10px; margin-bottom: 10px; border-left: 3px solid #39ff14; display: inline-block; float: left; clear: both; max-width: 80%; font-family: monospace; color: #39ff14;'><b>JARVIS:</b> {message['text']}</div>""", unsafe_allow_html=True)
-            
-    st.markdown("<div style='clear: both;'><br></div>", unsafe_allow_html=True)
-    with st.form(key="chat_form", clear_on_submit=True):
-        user_input = st.text_input("Type your question or command:")
-        submit_chat = st.form_submit_button("COMPILE AND TRANSMIT INPUT")
-        if submit_chat and user_input:
-            st.session_state["chat_history"].append({"role": "user", "text": user_input})
-            cmd = user_input.lower()
-            prefix = random.choice(["Parsing input telemetry modules... ", "Query decrypted successfully. "])
-            suffix = random.choice([" // Network telemetry verified.", " // Logic loop fully completed."])
-            
-            if any(x in cmd for x in ["car", "start", "engine"]):
-                core = "Engines ignite via a high-torque starter motor spinning the flywheel, creating compression as fuel injects into the core blocks."
-            elif "romel" in cmd:
-                core = "Operator Romel detected. Status: Friend node confirmed. Terminal access fully authorized."
-            elif any(x in cmd for x in ["status", "alive", "user"]):
-                core = f"Operational report: System clean. Mainframe hosting {telemetry['total_connections']} connections safely."
-            else:
-                core = f"Analyzing complex query stream. Data processing pathways mapped successfully under Jinat's core firewall rules."
-                
-            st.session_state["chat_history"].append({"role": "jarvis", "text": f"{prefix}{core}{suffix}"})
-            st.rerun()
+        const cx = canvas.width / 2;
+        const cy = canvas.height / 2;
+        const boxWidth = 140 * zoomLevel;
+        const boxHeight = 140 * zoomLevel;
+        const x = cx - (boxWidth / 2);
+        const y = cy - (boxHeight / 2);
 
-elif module == "🚨 Habit Tracker Grid":
-    st.subheader("[+] ROBUST HABIT TRACKER MATRIX")
-    target_date = st.date_input("Logging Target Date Selection:", datetime.now())
-    date_str = str(target_date)
-    if date_str not in st.session_state["tracker_vault"]:
-        st.session_state["tracker_vault"][date_str] = {habit: False for habit in HABITS}
-    st.markdown("### ❌ LOG DAILY RECAP PROGRESSION")
-    for habit in HABITS:
-        st.session_state["tracker_vault"][date_str][habit] = st.checkbox(f"Mark Complete: {habit}", value=st.session_state["tracker_vault"][date_str].get(habit, False))
-    if st.button("💾 LOCK LOG INTO SECURE VAULT RECORD"):
-        st.success(f"Success! Progression markers safely locked for date: {date_str}")
-    st.markdown("---")
-    st.markdown("### 📈 AGGREGATED METRICS")
-    total_days = len(st.session_state["tracker_vault"])
-    if total_days > 0:
-        for habit in HABITS:
-            completed_days = sum(1 for d in st.session_state["tracker_vault"] if st.session_state["tracker_vault"][d].get(habit, False))
-            pct = (completed_days / total_days) * 100
-            st.write(f"**{habit}**")
-            st.progress(int(pct))
-    st.code(json.dumps(st.session_state["tracker_vault"]), language="json")
+        // Dynamic targeting effect (Pulse / Zoom)
+        if (scanProgress < 100) {
+            scanProgress += 0.8;
+            if (scanProgress > 50 && zoomLevel < 1.15) {
+                zoomLevel += 0.003; // Smooth digital auto-zoom feel
+            }
+        } else {
+            targetFound = true;
+            statusText.textContent = "STATUS: TARGET LOCKED";
+            statusText.style.color = "#00f3ff";
+        }
 
-elif module == "🛸 Jarvis 3D Design Lab":
-    st.subheader("[+] TONY STARK HOLOGRAPHIC MESH GENERATOR")
-    component = st.selectbox("Select Target Component Matrix:", ["Aero Spoiler Array", "Supercar Wheel Rim Node"])
-    scale_factor = st.slider("Dimensional Scale Parameter:", 0.5, 2.5, 1.0)
-    if st.button("RUN 3D STRUCTURAL COMPILATION"):
-        fig = go.Figure()
-        if component == "Aero Spoiler Array":
-            u = np.linspace(-2, 2, 20); v = np.linspace(-1, 1, 20); U, V = np.meshgrid(u, v)
-            fig.add_trace(go.Surface(x=scale_factor*U, y=scale_factor*V, z=scale_factor*0.15*(U**2 - V**2), showscale=False))
-        fig.update_layout(scene=dict(xaxis=dict(backgroundcolor="black")), paper_bgcolor='black', plot_bgcolor='black', margin=dict(l=0, r=0, b=0, t=0))
-        st.plotly_chart(fig, use_container_width=True)
+        // 1. Draw Bounding Stroke Outline
+        ctx.strokeStyle = targetFound ? "#39ff14" : "#00f3ff";
+        ctx.lineWidth = 2;
+        ctx.shadowBlur = 10;
+        ctx.shadowColor = targetFound ? "#39ff14" : "#00f3ff";
 
-elif module == "Diagnostics": st.write("System execution circuit status: Stable.")
-elif module == "Content Matrix": st.write("Aesthetic Content Matrix online.")
-elif module == "F1 Motorsport Vault": st.write("Motorsport technical vault synchronized.")
-elif module == "Risk Parameters": st.write("Risk management formulas operational.")
-elif module == "Supercar Telemetry": st.write("Lamborghini structural spec arrays loaded.")
+        // Draw Corner Reticles
+        const cornerLen = 18;
+        // Top-Left
+        ctx.beginPath(); ctx.moveTo(x, y + cornerLen); ctx.lineTo(x, y); ctx.lineTo(x + cornerLen, y); ctx.stroke();
+        // Top-Right
+        ctx.beginPath(); ctx.moveTo(x + boxWidth - cornerLen, y); ctx.lineTo(x + boxWidth, y); ctx.lineTo(x + boxWidth, y + cornerLen); ctx.stroke();
+        // Bottom-Left
+        ctx.beginPath(); ctx.moveTo(x, y + boxHeight - cornerLen); ctx.lineTo(x, y + boxHeight); ctx.lineTo(x + cornerLen, y + boxHeight); ctx.stroke();
+        // Bottom-Right
+        ctx.beginPath(); ctx.moveTo(x + boxWidth - cornerLen, y + boxHeight); ctx.lineTo(x + boxWidth, y + boxHeight); ctx.lineTo(x + boxWidth, y + boxHeight - cornerLen); ctx.stroke();
+
+        // 2. Draw Sci-Fi HUD Search Box (Positioned to the right of target)
+        if (targetFound) {
+            const hudX = x + boxWidth + 12;
+            const hudY = y - 10;
+            const hudW = 150;
+            const hudH = 110;
+
+            // Connector Line from Box to Search Panel
+            ctx.beginPath();
+            ctx.moveTo(x + boxWidth, cy);
+            ctx.lineTo(hudX, cy);
+            ctx.strokeStyle = "#00f3ff";
+            ctx.stroke();
+
+            // Background Panel
+            ctx.fillStyle = "rgba(10, 15, 25, 0.85)";
+            ctx.fillRect(hudX, hudY, hudW, hudH);
+            ctx.strokeRect(hudX, hudY, hudW, hudH);
+
+            // Telemetry Text
+            ctx.shadowBlur = 0;
+            ctx.fillStyle = "#39ff14";
+            ctx.font = "bold 9px monospace";
+            ctx.fillText("🔍 SEARCH RESULTS:", hudX + 8, hudY + 18);
+
+            ctx.fillStyle = "#ffffff";
+            ctx.font = "bold 10px monospace";
+            ctx.fillText(activeData.name, hudX + 8, hudY + 36);
+
+            ctx.fillStyle = "#00f3ff";
+            ctx.font = "8px monospace";
+            ctx.fillText(`CLASS: ${activeData.category}`, hudX + 8, hudY + 54);
+            ctx.fillText(`CONF: ${activeData.confidence}`, hudX + 8, hudY + 68);
+
+            ctx.fillStyle = "#8899a6";
+            ctx.fillText("WEB: Query Complete", hudX + 8, hudY + 88);
+            ctx.fillText("STATUS: Indexing...", hudX + 8, hudY + 98);
+        } else {
+            // Scanning Line Animation
+            const scanLineY = y + ((scanProgress / 100) * boxHeight);
+            ctx.beginPath();
+            ctx.moveTo(x, scanLineY);
+            ctx.lineTo(x + boxWidth, scanLineY);
+            ctx.strokeStyle = "rgba(57, 255, 20, 0.8)";
+            ctx.stroke();
+        }
+
+        requestAnimationFrame(renderARLoop);
+    }
+</script>
+"""
+
+components.html(spatial_vision_html, height=460)
 
 st.markdown("---")
-st.write("📟 SECURE CLOUD RUNTIME // END OF LINE.")
-        
+st.write("📟 SYSTEM ARCHITECTURE: SPATIAL VISION MATRIX v1.0")
