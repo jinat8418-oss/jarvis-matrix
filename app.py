@@ -68,8 +68,8 @@ st.markdown("""
 
 # --- FULL VIEWPORT TENSORFLOW ENGINE WITH TELEMETRY LOGS ---
 spatial_vision_html = """
-<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
-<script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd"></script>
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.10.0/dist/tf.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd@2.2.3/dist/coco-ssd.min.js"></script>
 
 <div style="position: relative; width: 100%; max-width: 600px; margin: 0 auto; background: #FFFFFF; border: 1px solid #CBD5E1; border-radius: 14px; padding: 12px; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08); font-family: monospace;">
     
@@ -148,7 +148,6 @@ spatial_vision_html = """
     const startBtn = document.getElementById('startCamBtn');
     const resetBtn = document.getElementById('resetScanBtn');
     const aiStatus = document.getElementById('aiStatus');
-    const statusText = document.getElementById('targetStatus');
     const viewport = document.getElementById('viewport');
     
     const hudCard = document.getElementById('hudCard');
@@ -257,7 +256,6 @@ spatial_vision_html = """
         zoomContainer.style.transformOrigin = `${originX}% ${originY}%`;
         zoomContainer.style.transform = "scale(1.15)";
 
-        // Append to Scan Log History
         addScanToHistory(det);
     }
 
@@ -267,13 +265,10 @@ spatial_vision_html = """
         const scoreStr = `${(det.score * 100).toFixed(1)}%`;
         const modeStr = det.isManual ? "MANUAL" : "AUTO";
 
-        // Update Top Neon Badge
         badgeLastTarget.textContent = className.length > 10 ? className.substring(0, 10) + ".." : className;
 
-        // Hide Empty Placeholder Row
         if (emptyRow) emptyRow.style.display = "none";
 
-        // Prepend Row to History Table
         const newRow = document.createElement('tr');
         newRow.style.borderBottom = "1px solid #E2E8F0";
         newRow.innerHTML = `
@@ -299,7 +294,6 @@ spatial_vision_html = """
 
         const dynamicColor = getColorForClass(det.class);
 
-        // Render Bounding Brackets
         const corner = 16;
         ctx.strokeStyle = dynamicColor;
         ctx.lineWidth = 3;
@@ -313,7 +307,6 @@ spatial_vision_html = """
         ctx.moveTo(x + w - corner, y + h); ctx.lineTo(x + w, y + h); ctx.lineTo(x + w, y + h - corner);
         ctx.stroke();
 
-        // Update Fixed Overlay Card
         hudCard.style.display = "block";
         hudCard.style.borderColor = dynamicColor;
         hudClass.textContent = det.class.toUpperCase();
@@ -324,4 +317,4 @@ spatial_vision_html = """
 </script>
 """
 
-components.html(spatial_vision_html, height=640)
+components.html(spatial_vision_html, height=720)
