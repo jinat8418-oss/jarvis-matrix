@@ -1,4 +1,4 @@
-import streamlit as st
+ import streamlit as st
 import streamlit.components.v1 as components
 
 # --- FULLSCREEN CONFIGURATION ---
@@ -66,35 +66,77 @@ st.markdown("""
     <div class="hud-subtitle">OPERATOR: JINAT // DYNAMIC SPATIAL TELEMETRY</div>
 """, unsafe_allow_html=True)
 
-# --- FULL VIEWPORT TENSORFLOW ENGINE ---
+# --- FULL VIEWPORT TENSORFLOW ENGINE WITH TELEMETRY LOGS ---
 spatial_vision_html = """
 <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
 <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd"></script>
 
 <div style="position: relative; width: 100%; max-width: 600px; margin: 0 auto; background: #FFFFFF; border: 1px solid #CBD5E1; border-radius: 14px; padding: 12px; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08); font-family: monospace;">
     
-    <!-- Top Operator Telemetry Bar -->
-    <div style="display: flex; justify-content: space-between; color: #475569; font-size: 0.7rem; letter-spacing: 1px; margin-bottom: 8px; font-weight: bold;">
+    <!-- Top Operator Telemetry Bar with Rectangular Counter Badge -->
+    <div style="display: flex; justify-content: space-between; align-items: center; color: #475569; font-size: 0.7rem; letter-spacing: 1px; margin-bottom: 8px; font-weight: bold;">
         <span id="aiStatus" style="color: #2563EB;">SYS: JINAT_CORE_READY</span>
-        <span id="targetStatus" style="color: #64748B;">STATUS: STANDBY</span>
+        
+        <!-- NEON COUNTER BOX -->
+        <div style="background: rgba(15, 23, 42, 0.95); border: 1.5px solid #00D8FF; border-radius: 6px; padding: 4px 8px; box-shadow: 0 0 8px rgba(0, 216, 255, 0.4); display: flex; align-items: center; gap: 8px;">
+            <span style="color: #00D8FF; font-size: 0.65rem;">SESSION_NODES: <span id="userCount" style="color: #FFFFFF; font-weight: 900;">1</span></span>
+            <span style="color: #CBD5E1;">|</span>
+            <span style="color: #00D8FF; font-size: 0.65rem;">LAST: <span id="badgeLastTarget" style="color: #10B981; font-weight: 800;">NONE</span></span>
+        </div>
     </div>
 
-    <!-- Viewport Container with Dynamic Zoom Frame -->
-    <div id="viewport" style="position: relative; width: 100%; height: 58vh; max-height: 460px; min-height: 320px; overflow: hidden; border-radius: 10px; border: 1px solid #E2E8F0; background: #000; touch-action: none;">
+    <!-- Viewport Container -->
+    <div id="viewport" style="position: relative; width: 100%; height: 50vh; max-height: 420px; min-height: 300px; overflow: hidden; border-radius: 10px; border: 1px solid #E2E8F0; background: #000; touch-action: none;">
         <div id="zoomContainer" style="width: 100%; height: 100%; transform-origin: center; transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);">
             <video id="webcam" autoplay playsinline muted style="width: 100%; height: 100%; object-fit: cover;"></video>
             <canvas id="arCanvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></canvas>
         </div>
+
+        <!-- Fixed Bottom HUD Overlay Card -->
+        <div id="hudCard" style="display: none; position: absolute; bottom: 12px; left: 12px; right: 12px; background: rgba(15, 23, 42, 0.92); border: 1.5px solid #2563EB; border-radius: 8px; padding: 10px 14px; color: #FFFFFF; box-shadow: 0 4px 15px rgba(0,0,0,0.3); backdrop-filter: blur(4px); pointer-events: none; z-index: 10;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px;">
+                <span style="font-size: 0.65rem; color: #94A3B8; font-weight: bold; letter-spacing: 1px;">TARGET ACQUIRED</span>
+                <span id="hudConf" style="font-size: 0.7rem; color: #2563EB; font-weight: bold;">CONF: 0.0%</span>
+            </div>
+            <div id="hudClass" style="font-size: 1.1rem; font-weight: 900; letter-spacing: 1px; color: #FFFFFF;">UNKNOWN</div>
+            <div id="hudMode" style="font-size: 0.65rem; color: #38BDF8; margin-top: 2px;">NET: SEARCH COMPLETE</div>
+        </div>
     </div>
 
     <!-- Control Buttons -->
-    <div style="margin-top: 12px; display: flex; gap: 10px; justify-content: center;">
-        <button id="startCamBtn" style="background: #2563EB; color: #FFFFFF; border: none; padding: 12px 24px; font-weight: 800; font-family: monospace; border-radius: 8px; cursor: pointer; letter-spacing: 1.5px; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);">
+    <div style="margin-top: 10px; display: flex; gap: 10px; justify-content: center;">
+        <button id="startCamBtn" style="background: #2563EB; color: #FFFFFF; border: none; padding: 10px 20px; font-weight: 800; font-family: monospace; border-radius: 8px; cursor: pointer; letter-spacing: 1.5px; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);">
             INITIALIZE SCANNER
         </button>
-        <button id="resetScanBtn" style="background: #F8FAFC; color: #2563EB; border: 1.5px solid #2563EB; padding: 12px 20px; font-weight: 700; font-family: monospace; border-radius: 8px; cursor: pointer; display: none; letter-spacing: 1px;">
+        <button id="resetScanBtn" style="background: #F8FAFC; color: #2563EB; border: 1.5px solid #2563EB; padding: 10px 18px; font-weight: 700; font-family: monospace; border-radius: 8px; cursor: pointer; display: none; letter-spacing: 1px;">
             ⚡ RESET / SCAN NEW
         </button>
+    </div>
+
+    <!-- LIVE TELEMETRY SCAN HISTORY LOG -->
+    <div style="margin-top: 14px; border-top: 1px dashed #CBD5E1; padding-top: 10px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+            <span style="font-size: 0.65rem; color: #00D8FF; font-weight: bold; letter-spacing: 1px; background: #0F172A; padding: 2px 6px; border-radius: 4px;">SYSTEM LOG // TELEMETRY REPOSITORY</span>
+            <span id="logCount" style="font-size: 0.65rem; color: #64748B;">ENTRIES: 0</span>
+        </div>
+        
+        <div id="historyTableContainer" style="max-height: 120px; overflow-y: auto; border: 1px solid #E2E8F0; border-radius: 6px; background: #F8FAFC;">
+            <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.65rem; color: #334155;">
+                <thead>
+                    <tr style="background: #0F172A; color: #00D8FF; border-bottom: 1px solid #334155;">
+                        <th style="padding: 6px;">TIME</th>
+                        <th style="padding: 6px;">OBJECT CLASS</th>
+                        <th style="padding: 6px;">ACCURACY</th>
+                        <th style="padding: 6px;">MODE</th>
+                    </tr>
+                </thead>
+                <tbody id="historyTableBody">
+                    <tr id="emptyRow">
+                        <td colspan="4" style="padding: 10px; text-align: center; color: #94A3B8;">AWAITING FIRST TARGET LOCK...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
 
@@ -108,19 +150,29 @@ spatial_vision_html = """
     const aiStatus = document.getElementById('aiStatus');
     const statusText = document.getElementById('targetStatus');
     const viewport = document.getElementById('viewport');
+    
+    const hudCard = document.getElementById('hudCard');
+    const hudClass = document.getElementById('hudClass');
+    const hudConf = document.getElementById('hudConf');
+    const hudMode = document.getElementById('hudMode');
+    
+    const badgeLastTarget = document.getElementById('badgeLastTarget');
+    const historyTableBody = document.getElementById('historyTableBody');
+    const emptyRow = document.getElementById('emptyRow');
+    const logCount = document.getElementById('logCount');
 
     let model = null;
     let isScanning = false;
     let lockedDetection = null;
+    let scanHistory = [];
 
-    // Dynamic Class Color Mapping Engine
     function getColorForClass(className) {
         const cls = className.toLowerCase();
-        if (cls.includes('book') || cls.includes('paper')) return '#10B981'; // Emerald Green
-        if (cls.includes('laptop') || cls.includes('tv') || cls.includes('cell phone') || cls.includes('calculator')) return '#00D8FF'; // Cyber Cyan
-        if (cls.includes('bag') || cls.includes('backpack') || cls.includes('suitcase')) return '#8B5CF6'; // Violet
-        if (cls.includes('manual')) return '#F59E0B'; // Amber
-        return '#2563EB'; // Royal Blue Default
+        if (cls.includes('book') || cls.includes('paper')) return '#10B981'; 
+        if (cls.includes('laptop') || cls.includes('tv') || cls.includes('cell phone') || cls.includes('calculator')) return '#00D8FF'; 
+        if (cls.includes('bag') || cls.includes('backpack') || cls.includes('suitcase')) return '#8B5CF6'; 
+        if (cls.includes('manual')) return '#F59E0B'; 
+        return '#2563EB'; 
     }
 
     cocoSsd.load().then(loadedModel => {
@@ -143,8 +195,6 @@ spatial_vision_html = """
                 isScanning = true;
                 startBtn.style.display = 'none';
                 resetBtn.style.display = 'inline-block';
-                statusText.textContent = "STATUS: SEARCHING...";
-                statusText.style.color = "#2563EB";
                 detectObjects();
             };
         } catch (err) {
@@ -156,11 +206,9 @@ spatial_vision_html = """
         lockedDetection = null;
         zoomContainer.style.transform = "scale(1)";
         zoomContainer.style.transformOrigin = "center";
-        statusText.textContent = "STATUS: SEARCHING...";
-        statusText.style.color = "#2563EB";
+        hudCard.style.display = "none";
     });
 
-    // Tap to Focus & Manual Target Search
     canvas.addEventListener('pointerdown', (e) => {
         const rect = canvas.getBoundingClientRect();
         const touchX = e.clientX - rect.left;
@@ -172,7 +220,7 @@ spatial_vision_html = """
             score: 0.98,
             isManual: true
         };
-        triggerZoomAndSearch(touchX, touchY);
+        triggerZoomAndSearch(touchX, touchY, lockedDetection);
     });
 
     async function detectObjects() {
@@ -191,7 +239,7 @@ spatial_vision_html = """
                         lockedDetection.class = 'CALCULATOR / DEVICE';
                     }
                     
-                    triggerZoomAndSearch(bx + bw / 2, by + bh / 2);
+                    triggerZoomAndSearch(bx + bw / 2, by + bh / 2, lockedDetection);
                 }
             }
         }
@@ -203,15 +251,41 @@ spatial_vision_html = """
         requestAnimationFrame(detectObjects);
     }
 
-    function triggerZoomAndSearch(centerX, centerY) {
-        statusText.textContent = "STATUS: TARGET LOCKED";
-        statusText.style.color = "#10B981";
-        
-        // Gentle Centered Canvas Zoom to avoid pushing edges offscreen
+    function triggerZoomAndSearch(centerX, centerY, det) {
         const originX = Math.min(Math.max((centerX / canvas.width) * 100, 20), 80);
         const originY = Math.min(Math.max((centerY / canvas.height) * 100, 20), 80);
         zoomContainer.style.transformOrigin = `${originX}% ${originY}%`;
         zoomContainer.style.transform = "scale(1.15)";
+
+        // Append to Scan Log History
+        addScanToHistory(det);
+    }
+
+    function addScanToHistory(det) {
+        const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        const className = det.class.toUpperCase();
+        const scoreStr = `${(det.score * 100).toFixed(1)}%`;
+        const modeStr = det.isManual ? "MANUAL" : "AUTO";
+
+        // Update Top Neon Badge
+        badgeLastTarget.textContent = className.length > 10 ? className.substring(0, 10) + ".." : className;
+
+        // Hide Empty Placeholder Row
+        if (emptyRow) emptyRow.style.display = "none";
+
+        // Prepend Row to History Table
+        const newRow = document.createElement('tr');
+        newRow.style.borderBottom = "1px solid #E2E8F0";
+        newRow.innerHTML = `
+            <td style="padding: 6px; font-weight: bold; color: #64748B;">${timeStr}</td>
+            <td style="padding: 6px; font-weight: 800; color: ${getColorForClass(det.class)};">${className}</td>
+            <td style="padding: 6px;">${scoreStr}</td>
+            <td style="padding: 6px; color: #2563EB; font-weight: bold;">${modeStr}</td>
+        `;
+        historyTableBody.insertBefore(newRow, historyTableBody.firstChild);
+
+        scanHistory.push(det);
+        logCount.textContent = `ENTRIES: ${scanHistory.length}`;
     }
 
     function drawLockFrame(det) {
@@ -225,7 +299,7 @@ spatial_vision_html = """
 
         const dynamicColor = getColorForClass(det.class);
 
-        // Bounding Brackets
+        // Render Bounding Brackets
         const corner = 16;
         ctx.strokeStyle = dynamicColor;
         ctx.lineWidth = 3;
@@ -233,57 +307,21 @@ spatial_vision_html = """
         ctx.shadowColor = dynamicColor;
 
         ctx.beginPath();
-        // Top Left
         ctx.moveTo(x, y + corner); ctx.lineTo(x, y); ctx.lineTo(x + corner, y);
-        // Top Right
         ctx.moveTo(x + w - corner, y); ctx.lineTo(x + w, y); ctx.lineTo(x + w, y + corner);
-        // Bottom Left
         ctx.moveTo(x, y + h - corner); ctx.lineTo(x, y + h); ctx.lineTo(x + corner, y + h);
-        // Bottom Right
         ctx.moveTo(x + w - corner, y + h); ctx.lineTo(x + w, y + h); ctx.lineTo(x + w, y + h - corner);
         ctx.stroke();
 
-        // Screen-Aware Smart Overlay Positioning
-        const hudW = 140;
-        const hudH = 75;
-        
-        let hudX = x + w + 10;
-        let hudY = y;
-
-        // If HUD exceeds right canvas boundary, flip it inside/left
-        if (hudX + hudW > canvas.width - 10) {
-            hudX = Math.max(10, x - hudW - 10);
-            if (hudX < 10) {
-                hudX = Math.max(10, x + 10); // Overlay inside box if left also fails
-            }
-        }
-
-        // Clamp Y to stay within viewport
-        hudY = Math.min(Math.max(hudY, 10), canvas.height - hudH - 10);
-
-        ctx.fillStyle = "rgba(15, 23, 42, 0.92)";
-        ctx.fillRect(hudX, hudY, hudW, hudH);
-        ctx.strokeStyle = dynamicColor;
-        ctx.lineWidth = 1.5;
-        ctx.strokeRect(hudX, hudY, hudW, hudH);
-
-        ctx.shadowBlur = 0;
-        ctx.fillStyle = "#94A3B8";
-        ctx.font = "bold 9px 'Consolas', monospace";
-        ctx.fillText("TARGET ACQUIRED:", hudX + 8, hudY + 18);
-
-        ctx.fillStyle = "#FFFFFF";
-        ctx.font = "bold 11px 'Consolas', monospace";
-        ctx.fillText(det.class.toUpperCase(), hudX + 8, hudY + 36);
-
-        ctx.fillStyle = dynamicColor;
-        ctx.font = "9px 'Consolas', monospace";
-        ctx.fillText(`CONF: ${(det.score * 100).toFixed(1)}%`, hudX + 8, hudY + 52);
-        
-        ctx.fillStyle = "#38BDF8";
-        ctx.fillText(det.isManual ? "MODE: TAP SEARCH" : "NET: SEARCH COMPLETE", hudX + 8, hudY + 66);
+        // Update Fixed Overlay Card
+        hudCard.style.display = "block";
+        hudCard.style.borderColor = dynamicColor;
+        hudClass.textContent = det.class.toUpperCase();
+        hudConf.textContent = `CONF: ${(det.score * 100).toFixed(1)}%`;
+        hudConf.style.color = dynamicColor;
+        hudMode.textContent = det.isManual ? "MODE: TAP SEARCH" : "NET: SEARCH COMPLETE";
     }
 </script>
 """
 
-components.html(spatial_vision_html, height=540)
+components.html(spatial_vision_html, height=640)
