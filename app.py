@@ -1,9 +1,3 @@
-  import streamlit as st
-import streamlit.components.v1 as components
-
-# --- FULLSCREEN CONFIGURATION ---
-st.set_page_config(page_title="JINAT VISION MATRIX", page_icon="⚡", layout="wide")
-
 # --- PREMIUM WHITE & CYAN HUD STYLING ---
 st.markdown("""
     <style>
