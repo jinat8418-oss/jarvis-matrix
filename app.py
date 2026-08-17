@@ -1,4 +1,8 @@
-# --- PREMIUM WHITE & CYAN HUD STYLING ---
+import streamlit as st
+import streamlit.components.v1 as components
+
+st.set_page_config(page_title="JINAT VISION MATRIX", page_icon="⚡", layout="wide")
+
 st.markdown("""
     <style>
     .block-container {
@@ -45,7 +49,6 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# --- HEADER WITH USER BRANDING ---
 st.markdown("""
     <div class="hud-title-container">
         <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -60,18 +63,15 @@ st.markdown("""
     <div class="hud-subtitle">OPERATOR: JINAT // DYNAMIC SPATIAL TELEMETRY</div>
 """, unsafe_allow_html=True)
 
-# --- FULL VIEWPORT TENSORFLOW ENGINE WITH TELEMETRY LOGS ---
 spatial_vision_html = """
 <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.10.0/dist/tf.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd@2.2.3/dist/coco-ssd.min.js"></script>
 
 <div style="position: relative; width: 100%; max-width: 600px; margin: 0 auto; background: #FFFFFF; border: 1px solid #CBD5E1; border-radius: 14px; padding: 12px; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08); font-family: monospace;">
     
-    <!-- Top Operator Telemetry Bar with Rectangular Counter Badge -->
     <div style="display: flex; justify-content: space-between; align-items: center; color: #475569; font-size: 0.7rem; letter-spacing: 1px; margin-bottom: 8px; font-weight: bold;">
         <span id="aiStatus" style="color: #2563EB;">SYS: JINAT_CORE_READY</span>
         
-        <!-- NEON COUNTER BOX -->
         <div style="background: rgba(15, 23, 42, 0.95); border: 1.5px solid #00D8FF; border-radius: 6px; padding: 4px 8px; box-shadow: 0 0 8px rgba(0, 216, 255, 0.4); display: flex; align-items: center; gap: 8px;">
             <span style="color: #00D8FF; font-size: 0.65rem;">SESSION_NODES: <span id="userCount" style="color: #FFFFFF; font-weight: 900;">1</span></span>
             <span style="color: #CBD5E1;">|</span>
@@ -79,14 +79,12 @@ spatial_vision_html = """
         </div>
     </div>
 
-    <!-- Viewport Container -->
     <div id="viewport" style="position: relative; width: 100%; height: 50vh; max-height: 420px; min-height: 300px; overflow: hidden; border-radius: 10px; border: 1px solid #E2E8F0; background: #000; touch-action: none;">
         <div id="zoomContainer" style="width: 100%; height: 100%; transform-origin: center; transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);">
             <video id="webcam" autoplay playsinline muted style="width: 100%; height: 100%; object-fit: cover;"></video>
             <canvas id="arCanvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></canvas>
         </div>
 
-        <!-- Fixed Bottom HUD Overlay Card -->
         <div id="hudCard" style="display: none; position: absolute; bottom: 12px; left: 12px; right: 12px; background: rgba(15, 23, 42, 0.92); border: 1.5px solid #2563EB; border-radius: 8px; padding: 10px 14px; color: #FFFFFF; box-shadow: 0 4px 15px rgba(0,0,0,0.3); backdrop-filter: blur(4px); pointer-events: none; z-index: 10;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px;">
                 <span style="font-size: 0.65rem; color: #94A3B8; font-weight: bold; letter-spacing: 1px;">TARGET ACQUIRED</span>
@@ -97,7 +95,6 @@ spatial_vision_html = """
         </div>
     </div>
 
-    <!-- Control Buttons -->
     <div style="margin-top: 10px; display: flex; gap: 10px; justify-content: center;">
         <button id="startCamBtn" style="background: #2563EB; color: #FFFFFF; border: none; padding: 10px 20px; font-weight: 800; font-family: monospace; border-radius: 8px; cursor: pointer; letter-spacing: 1.5px; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);">
             INITIALIZE SCANNER
@@ -107,7 +104,6 @@ spatial_vision_html = """
         </button>
     </div>
 
-    <!-- LIVE TELEMETRY SCAN HISTORY LOG -->
     <div style="margin-top: 14px; border-top: 1px dashed #CBD5E1; padding-top: 10px;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
             <span style="font-size: 0.65rem; color: #00D8FF; font-weight: bold; letter-spacing: 1px; background: #0F172A; padding: 2px 6px; border-radius: 4px;">SYSTEM LOG // TELEMETRY REPOSITORY</span>
