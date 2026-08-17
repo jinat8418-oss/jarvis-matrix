@@ -307,4 +307,4 @@ spatial_vision_html = """
 </script>
 """
 
-components.html(spatial_vision_html, height=720)
+components.html(spatial_vision_html, height=720) 
